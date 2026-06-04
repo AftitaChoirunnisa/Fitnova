@@ -115,10 +115,12 @@ class _HomePageState extends State<HomePage>
   IconData _getSportIcon(String type) {
     final t = type.toLowerCase();
     if (t.contains('run')) return Icons.directions_run_rounded;
-    if (t.contains('gym') || t.contains('workout'))
+    if (t.contains('gym') || t.contains('workout')) {
       return Icons.fitness_center_rounded;
-    if (t.contains('cycl') || t.contains('sepeda'))
+    }
+    if (t.contains('cycl') || t.contains('sepeda')) {
       return Icons.directions_bike_rounded;
+    }
     if (t.contains('swim') || t.contains('renang')) return Icons.pool_rounded;
     if (t.contains('yoga')) return Icons.self_improvement_rounded;
     return Icons.fitness_center_rounded;
@@ -209,7 +211,9 @@ class _HomePageState extends State<HomePage>
                 ),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundColor: AppColors.primaryGreen.withOpacity(0.15),
+                  backgroundColor: AppColors.primaryGreen.withValues(
+                    alpha: 0.15,
+                  ),
                   child: Text(
                     _getInitial(name),
                     style: AppTextStyles.titleMedium.copyWith(
@@ -336,7 +340,7 @@ class _HomePageState extends State<HomePage>
           ProgressBar(
             value: progress,
             progressColor: AppColors.primaryGreen,
-            backgroundColor: AppColors.darkGreen.withOpacity(0.5),
+            backgroundColor: AppColors.darkGreen.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 12),
           Row(
@@ -440,7 +444,7 @@ class _HomePageState extends State<HomePage>
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryGreen.withOpacity(0.2),
+                        color: AppColors.primaryGreen.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -574,7 +578,7 @@ class _HomePageState extends State<HomePage>
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: recent.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final activity = recent[index];
                 return SoftCard(
@@ -587,7 +591,7 @@ class _HomePageState extends State<HomePage>
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryGreen.withOpacity(0.12),
+                          color: AppColors.primaryGreen.withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(

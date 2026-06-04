@@ -93,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: AppColors.primaryGreen.withOpacity(0.12),
+          color: AppColors.primaryGreen.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.primaryGreen),
         ),
@@ -190,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
             user.email,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
             ),
           ),
           if (user.bio?.isNotEmpty == true) ...[
@@ -199,7 +199,7 @@ class _ProfilePageState extends State<ProfilePage> {
               user.bio!,
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.white.withOpacity(0.9),
+                color: Colors.white.withValues(alpha: 0.9),
                 height: 1.4,
               ),
             ),
@@ -213,7 +213,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   width: 1.5,
                 ),
               ),
@@ -354,7 +354,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.warning.withOpacity(0.12),
+              color: AppColors.warning.withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
             child: const Icon(
@@ -435,7 +435,7 @@ class _ProfilePageState extends State<ProfilePage> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.12),
+          color: iconColor.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: iconColor, size: 20),
@@ -466,7 +466,7 @@ class _ProfilePageState extends State<ProfilePage> {
         border: Border.all(color: Colors.white, width: 3),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -474,7 +474,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       child: CircleAvatar(
         radius: radius,
-        backgroundColor: Colors.white.withOpacity(0.2),
+        backgroundColor: Colors.white.withValues(alpha: 0.2),
         backgroundImage: photoUrl != null && photoUrl.isNotEmpty
             ? NetworkImage(photoUrl)
             : null,

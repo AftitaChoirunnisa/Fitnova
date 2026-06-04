@@ -33,7 +33,7 @@ class FitnessBottomNav extends StatelessWidget {
         border: Border.all(color: AppColors.borderSoft, width: 1.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -62,7 +62,7 @@ class FitnessBottomNav extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? AppColors.primaryGreen.withOpacity(0.12)
+                            ? AppColors.primaryGreen.withValues(alpha: 0.12)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(16),
                       ),

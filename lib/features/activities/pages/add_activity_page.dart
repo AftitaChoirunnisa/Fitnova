@@ -108,7 +108,9 @@ class _AddActivityPageState extends State<AddActivityPage> {
               surface: AppColors.softCard,
               onSurface: AppColors.textPrimary,
             ),
-            dialogBackgroundColor: AppColors.softCard,
+            dialogTheme: const DialogThemeData(
+              backgroundColor: AppColors.softCard,
+            ),
           ),
           child: child!,
         );
@@ -253,7 +255,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.15),
+              color: Colors.white.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(

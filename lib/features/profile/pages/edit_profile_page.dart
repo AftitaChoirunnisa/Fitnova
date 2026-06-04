@@ -121,7 +121,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               border: Border.all(color: AppColors.primaryGreen, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -129,7 +129,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             child: CircleAvatar(
               radius: 48,
-              backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+              backgroundColor: AppColors.primaryGreen.withValues(alpha: 0.1),
               backgroundImage: photoUrl != null && photoUrl.isNotEmpty
                   ? NetworkImage(photoUrl)
                   : null,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/theme/app_theme.dart';
-import 'features/auth/pages/auth_wrapper.dart';
+import 'features/auth/pages/splash_screen.dart';
 
 class FitNovaApp extends StatelessWidget {
   const FitNovaApp({super.key});
@@ -12,7 +12,7 @@ class FitNovaApp extends StatelessWidget {
       title: 'FitNova',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: AuthWrapper(),
+      home: const SplashScreen(),
     );
   }
 }

@@ -110,7 +110,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: const Icon(
@@ -131,7 +131,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
               Text(
                 '$totalUsers active users ranked by their total workout duration this week.',
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.white.withOpacity(0.85),
+                  color: Colors.white.withValues(alpha: 0.85),
                   height: 1.4,
                 ),
               ),
@@ -220,7 +220,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 boxShadow: isFirst
                     ? [
                         BoxShadow(
-                          color: accentColor.withOpacity(0.2),
+                          color: accentColor.withValues(alpha: 0.2),
                           blurRadius: 12,
                           spreadRadius: 2,
                         ),
@@ -282,8 +282,8 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                accentColor.withOpacity(0.25),
-                accentColor.withOpacity(0.08),
+                accentColor.withValues(alpha: 0.25),
+                accentColor.withValues(alpha: 0.08),
               ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -341,7 +341,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: rankList.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {
               final entry = rankList[index];
               final userIndex = entry.key;
@@ -373,7 +373,9 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   const SizedBox(width: 12),
                   CircleAvatar(
                     radius: 20,
-                    backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+                    backgroundColor: AppColors.primaryGreen.withValues(
+                      alpha: 0.1,
+                    ),
                     backgroundImage: photoUrl != null && photoUrl.isNotEmpty
                         ? NetworkImage(photoUrl)
                         : null,

@@ -147,7 +147,8 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                     : ListView.separated(
                         padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),
                         itemCount: filteredChallenges.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           final challenge = filteredChallenges[index];
                           return _buildChallengeCard(context, challenge);
@@ -182,7 +183,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(
@@ -202,7 +203,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                       color: Colors.transparent,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.6),
+                        color: Colors.white.withValues(alpha: 0.6),
                         width: 1.5,
                       ),
                     ),
@@ -240,7 +241,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
             Text(
               '$totalChallenge challenges available to test your limits and keep you motivated.',
               style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha: 0.85),
                 height: 1.4,
               ),
             ),
@@ -295,7 +296,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: _categories.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
                 final category = _categories[index];
                 final isSelected = _selectedCategory == category;
@@ -309,7 +310,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                     });
                   },
                   backgroundColor: AppColors.softCard,
-                  selectedColor: AppColors.primaryGreen.withOpacity(0.12),
+                  selectedColor: AppColors.primaryGreen.withValues(alpha: 0.12),
                   labelStyle: AppTextStyles.titleMedium.copyWith(
                     fontSize: 13,
                     color: isSelected
@@ -352,7 +353,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryGreen.withOpacity(0.1),
+                    color: AppColors.primaryGreen.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.borderSoft),
                   ),

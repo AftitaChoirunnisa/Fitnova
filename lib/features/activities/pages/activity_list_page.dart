@@ -440,7 +440,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: _filters.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
                 final filter = _filters[index];
                 final isSelected = _selectedFilter == filter;
@@ -454,7 +454,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
                     });
                   },
                   backgroundColor: AppColors.softCard,
-                  selectedColor: AppColors.primaryGreen.withOpacity(0.12),
+                  selectedColor: AppColors.primaryGreen.withValues(alpha: 0.12),
                   labelStyle: AppTextStyles.titleMedium.copyWith(
                     fontSize: 12,
                     color: isSelected
@@ -502,7 +502,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryGreen.withOpacity(0.1),
+                    color: AppColors.primaryGreen.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.borderSoft),
                   ),
@@ -643,7 +643,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.danger.withOpacity(0.12),
+                color: AppColors.danger.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.borderSoft),
               ),

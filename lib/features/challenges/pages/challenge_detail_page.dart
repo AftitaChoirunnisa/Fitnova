@@ -354,7 +354,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.18),
+                  color: Colors.white.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
@@ -369,7 +369,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -394,7 +394,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
           Text(
             challenge.description,
             style: AppTextStyles.bodyMedium.copyWith(
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
               height: 1.4,
             ),
           ),
@@ -434,7 +434,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryGreen.withOpacity(0.12),
+                    color: AppColors.primaryGreen.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: AppColors.primaryGreen),
                   ),
@@ -633,7 +633,8 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: participants.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final participant = participants[index];
                     final isCompleted = participant.status == 'completed';
@@ -644,7 +645,9 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: AppColors.primaryGreen.withOpacity(0.1),
+                            color: AppColors.primaryGreen.withValues(
+                              alpha: 0.1,
+                            ),
                             shape: BoxShape.circle,
                             border: Border.all(color: AppColors.borderSoft),
                           ),
@@ -686,7 +689,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                           ),
                           decoration: BoxDecoration(
                             color: isCompleted
-                                ? AppColors.primaryGreen.withOpacity(0.1)
+                                ? AppColors.primaryGreen.withValues(alpha: 0.1)
                                 : AppColors.softCard,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(

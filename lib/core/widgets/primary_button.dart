@@ -26,7 +26,7 @@ class PrimaryButton extends StatelessWidget {
       elevation: 0,
       minimumSize: const Size(double.infinity, 54),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      disabledBackgroundColor: AppColors.primaryGreen.withOpacity(0.5),
+      disabledBackgroundColor: AppColors.primaryGreen.withValues(alpha: 0.5),
     );
 
     final Widget child = isLoading
