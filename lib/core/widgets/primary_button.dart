@@ -9,6 +9,8 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isLoading;
   final IconData? icon;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   const PrimaryButton({
     super.key,
@@ -16,26 +18,30 @@ class PrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
+    this.backgroundColor,
+    this.foregroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bg = backgroundColor ?? AppColors.primaryGreen;
+    final fg = foregroundColor ?? AppColors.darkGreen;
     final style = ElevatedButton.styleFrom(
-      backgroundColor: AppColors.primaryGreen,
-      foregroundColor: AppColors.darkGreen,
+      backgroundColor: bg,
+      foregroundColor: fg,
       elevation: 0,
       minimumSize: const Size(double.infinity, 54),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      disabledBackgroundColor: AppColors.primaryGreen.withValues(alpha: 0.5),
+      disabledBackgroundColor: bg.withValues(alpha: 0.5),
     );
 
     final Widget child = isLoading
-        ? const SizedBox(
+        ? SizedBox(
             width: 24,
             height: 24,
             child: CircularProgressIndicator(
               strokeWidth: 2.5,
-              color: AppColors.darkGreen,
+              color: fg,
             ),
           )
         : Row(
@@ -48,7 +54,7 @@ class PrimaryButton extends StatelessWidget {
               Text(
                 text,
                 style: AppTextStyles.titleLarge.copyWith(
-                  color: AppColors.darkGreen,
+                  color: fg,
                   fontWeight: FontWeight.bold,
                 ),
               ),

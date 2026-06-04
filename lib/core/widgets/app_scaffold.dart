@@ -28,7 +28,7 @@ class AppScaffold extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppColors.deepBackground, AppColors.darkGreen],
+          colors: [AppColors.background, AppColors.backgroundAlt],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),

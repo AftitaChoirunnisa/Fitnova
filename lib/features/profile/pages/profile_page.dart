@@ -93,13 +93,13 @@ class _ProfilePageState extends State<ProfilePage> {
         width: 48,
         height: 48,
         decoration: BoxDecoration(
-          color: AppColors.primaryGreen.withValues(alpha: 0.12),
+          color: AppColors.softBlue.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.primaryGreen),
+          border: Border.all(color: AppColors.softBlue),
         ),
         child: const Icon(
           Icons.fitness_center_rounded,
-          color: AppColors.primaryGreen,
+          color: AppColors.softBlue,
         ),
       ),
       children: const [
@@ -173,6 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final displayName = _displayName(user);
 
     return SoftGradientCard(
+      gradientColors: const [AppColors.surface, AppColors.surfaceElevated],
       child: Column(
         children: [
           _buildAvatar(user, radius: 44),
@@ -213,7 +214,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 color: Colors.transparent,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.6),
+                  color: AppColors.softBlue.withValues(alpha: 0.7),
                   width: 1.5,
                 ),
               ),
@@ -223,13 +224,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   const Icon(
                     Icons.edit_outlined,
                     size: 14,
-                    color: Colors.white,
+                    color: AppColors.softBlue,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     'Edit Profile',
                     style: AppTextStyles.labelSmall.copyWith(
-                      color: Colors.white,
+                      color: AppColors.softBlue,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -275,14 +276,14 @@ class _ProfilePageState extends State<ProfilePage> {
               title: 'Duration',
               value: '${user.totalDuration}',
               subtitle: 'mins',
-              color: AppColors.softMint,
+              color: AppColors.softBlue,
             ),
             _buildStatCell(
               icon: Icons.local_fire_department_rounded,
               title: 'Calories',
               value: '${user.totalCalories}',
               subtitle: 'kcal',
-              color: AppColors.warning,
+              color: AppColors.amber,
             ),
             _buildStatCell(
               icon: Icons.whatshot_rounded,
@@ -397,7 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
         children: [
           _buildMenuItem(
             icon: Icons.edit_outlined,
-            iconColor: AppColors.primaryGreen,
+            iconColor: AppColors.softBlue,
             title: 'Edit Profile',
             subtitle: 'Change name, phone, and bio',
             onTap: () => _goToEditProfile(user),
@@ -405,7 +406,7 @@ class _ProfilePageState extends State<ProfilePage> {
           const Divider(height: 1, color: AppColors.borderSoft),
           _buildMenuItem(
             icon: Icons.info_outline_rounded,
-            iconColor: AppColors.softMint,
+            iconColor: AppColors.primaryGreen,
             title: 'About FitNova',
             subtitle: 'App information and updates',
             onTap: _showAboutApp,
@@ -463,7 +464,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 3),
+        border: Border.all(color: AppColors.softBlue, width: 3),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.2),
@@ -474,7 +475,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       child: CircleAvatar(
         radius: radius,
-        backgroundColor: Colors.white.withValues(alpha: 0.2),
+        backgroundColor: AppColors.softBlue.withValues(alpha: 0.16),
         backgroundImage: photoUrl != null && photoUrl.isNotEmpty
             ? NetworkImage(photoUrl)
             : null,
@@ -482,7 +483,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ? Text(
                 _getInitial(_displayName(user)),
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textPrimary,
                   fontSize: radius * 0.78,
                   fontWeight: FontWeight.bold,
                 ),

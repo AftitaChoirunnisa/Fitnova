@@ -16,11 +16,11 @@ class AppTheme {
 
     final ColorScheme colorScheme = const ColorScheme.dark(
       primary: AppColors.primaryGreen,
-      secondary: AppColors.mediumGreen,
+      secondary: AppColors.softBlue,
       surface: AppColors.softCard,
       error: AppColors.danger,
-      onPrimary: AppColors.darkGreen,
-      onSecondary: AppColors.darkGreen,
+      onPrimary: AppColors.background,
+      onSecondary: AppColors.background,
       onSurface: AppColors.textPrimary,
       onError: AppColors.textPrimary,
     );
@@ -31,7 +31,7 @@ class AppTheme {
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.deepBackground,
       textTheme: baseTextTheme,
-      iconTheme: const IconThemeData(color: AppColors.primaryGreen),
+      iconTheme: const IconThemeData(color: AppColors.textSecondary),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.deepBackground,
         elevation: 0,
@@ -49,7 +49,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.darkGreen,
+        fillColor: AppColors.backgroundAlt,
         labelStyle: TextStyle(color: AppColors.textSecondary),
         hintStyle: TextStyle(color: AppColors.textMuted),
         prefixIconColor: AppColors.textSecondary,
@@ -80,7 +80,7 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryGreen,
-          foregroundColor: AppColors.darkGreen,
+          foregroundColor: AppColors.background,
           elevation: 0,
           minimumSize: const Size(double.infinity, 54),
           shape: RoundedRectangleBorder(
@@ -97,7 +97,7 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.softMint,
+          foregroundColor: AppColors.textSecondary,
           side: const BorderSide(color: AppColors.borderSoft),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
@@ -105,7 +105,7 @@ class AppTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.darkGreen,
+        backgroundColor: AppColors.backgroundAlt,
         indicatorColor: AppColors.primaryGreen.withValues(alpha: 0.16),
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(

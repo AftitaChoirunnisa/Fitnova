@@ -161,8 +161,8 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _goToAddChallengePage,
-        backgroundColor: AppColors.primaryGreen,
-        foregroundColor: AppColors.darkGreen,
+        backgroundColor: AppColors.amber,
+        foregroundColor: AppColors.background,
         shape: const CircleBorder(),
         elevation: 2,
         child: const Icon(Icons.add, size: 28),
@@ -174,6 +174,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       child: SoftGradientCard(
+        gradientColors: const [Color(0xFF2A2116), Color(0xFF3A2B18)],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -183,12 +184,12 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: AppColors.amber.withValues(alpha: 0.16),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(
                     Icons.emoji_events_rounded,
-                    color: Colors.white,
+                    color: AppColors.amber,
                     size: 24,
                   ),
                 ),
@@ -272,7 +273,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                 color: AppColors.textSecondary,
               ),
               filled: true,
-              fillColor: AppColors.darkGreen,
+              fillColor: AppColors.surface,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: AppColors.borderSoft),
@@ -284,7 +285,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(
-                  color: AppColors.primaryGreen,
+                  color: AppColors.amber,
                   width: 1.5,
                 ),
               ),
@@ -310,17 +311,17 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                     });
                   },
                   backgroundColor: AppColors.softCard,
-                  selectedColor: AppColors.primaryGreen.withValues(alpha: 0.12),
+                  selectedColor: AppColors.amber.withValues(alpha: 0.12),
                   labelStyle: AppTextStyles.titleMedium.copyWith(
                     fontSize: 13,
                     color: isSelected
-                        ? AppColors.primaryGreen
+                        ? AppColors.amber
                         : AppColors.textSecondary,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   ),
                   side: BorderSide(
                     color: isSelected
-                        ? AppColors.primaryGreen
+                        ? AppColors.amber
                         : AppColors.borderSoft,
                     width: isSelected ? 1.5 : 1.0,
                   ),
@@ -353,13 +354,13 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryGreen.withValues(alpha: 0.1),
+                    color: AppColors.amber.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.borderSoft),
                   ),
                   child: const Icon(
                     Icons.emoji_events_rounded,
-                    color: AppColors.primaryGreen,
+                    color: AppColors.amber,
                     size: 24,
                   ),
                 ),
@@ -379,13 +380,13 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                     Text(
                       challenge.category,
                       style: AppTextStyles.bodySmall.copyWith(
-                        color: AppColors.primaryGreen,
+                        color: AppColors.amber,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      '${challenge.targetDuration} mins • Ends ${DateFormatter.formatDate(challenge.endDate)}',
+                      '${challenge.targetDuration} mins - Ends ${DateFormatter.formatDate(challenge.endDate)}',
                       style: AppTextStyles.bodySmall.copyWith(
                         color: AppColors.textMuted,
                       ),

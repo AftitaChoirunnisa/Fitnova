@@ -63,7 +63,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
           return RefreshIndicator(
             onRefresh: () async => setState(() {}),
-            color: AppColors.primaryGreen,
+            color: AppColors.purple,
             backgroundColor: AppColors.softCard,
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -90,6 +90,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
   Widget _buildHeader(int totalUsers) {
     return SoftGradientCard(
+      gradientColors: const [Color(0xFF201A32), Color(0xFF2A2140)],
       child: Stack(
         children: [
           Positioned(
@@ -115,7 +116,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 ),
                 child: const Icon(
                   Icons.leaderboard_rounded,
-                  color: Colors.white,
+                  color: AppColors.purple,
                   size: 24,
                 ),
               ),
@@ -149,7 +150,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     if (topUsers.length > 1) {
       podiumWidgets.add(
         Expanded(
-          child: _buildPodiumSlot(topUsers[1], 2, 55, AppColors.borderSoft),
+          child: _buildPodiumSlot(topUsers[1], 2, 55, AppColors.softBlue),
         ),
       );
     } else {
@@ -159,7 +160,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     if (topUsers.isNotEmpty) {
       podiumWidgets.add(
         Expanded(
-          child: _buildPodiumSlot(topUsers[0], 1, 80, AppColors.warning),
+          child: _buildPodiumSlot(topUsers[0], 1, 80, AppColors.gold),
         ),
       );
     }
@@ -167,7 +168,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     if (topUsers.length > 2) {
       podiumWidgets.add(
         Expanded(
-          child: _buildPodiumSlot(topUsers[2], 3, 40, Colors.brown.shade400),
+          child: _buildPodiumSlot(topUsers[2], 3, 40, AppColors.amber),
         ),
       );
     } else {
@@ -250,7 +251,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                 top: -18,
                 child: Icon(
                   Icons.workspace_premium_rounded,
-                  color: AppColors.warning,
+                  color: AppColors.gold,
                   size: 22,
                 ),
               ),
@@ -271,7 +272,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
         Text(
           '${user.totalDuration} mins',
           style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.primaryGreen,
+            color: accentColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -324,7 +325,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
             children: [
               const Icon(
                 Icons.format_list_numbered_rounded,
-                color: AppColors.primaryGreen,
+                color: AppColors.purple,
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -359,11 +360,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                         '#$rank',
                         style: AppTextStyles.titleMedium.copyWith(
                           color: rank <= 3
-                              ? (rank == 1
-                                    ? AppColors.warning
-                                    : (rank == 2
-                                          ? AppColors.textSecondary
-                                          : Colors.brown.shade300))
+                              ? _getRankColor(rank)
                               : AppColors.textMuted,
                           fontWeight: FontWeight.bold,
                         ),
@@ -373,7 +370,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                   const SizedBox(width: 12),
                   CircleAvatar(
                     radius: 20,
-                    backgroundColor: AppColors.primaryGreen.withValues(
+                    backgroundColor: _getRankColor(rank).withValues(
                       alpha: 0.1,
                     ),
                     backgroundImage: photoUrl != null && photoUrl.isNotEmpty
@@ -383,7 +380,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                         ? Text(
                             _getInitial(user.name),
                             style: TextStyle(
-                              color: AppColors.primaryGreen,
+                              color: _getRankColor(rank),
                               fontWeight: FontWeight.bold,
                             ),
                           )
@@ -402,7 +399,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          '${user.totalActivities} activities • ${user.totalCalories} kcal',
+                          '${user.totalActivities} activities - ${user.totalCalories} kcal',
                           style: AppTextStyles.bodySmall.copyWith(
                             color: AppColors.textMuted,
                           ),
@@ -416,7 +413,7 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
                       Text(
                         '${user.totalDuration}',
                         style: AppTextStyles.titleMedium.copyWith(
-                          color: AppColors.primaryGreen,
+                          color: _getRankColor(rank),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -440,5 +437,12 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
   String _getInitial(String name) {
     if (name.trim().isEmpty) return 'U';
     return name.trim()[0].toUpperCase();
+  }
+
+  Color _getRankColor(int rank) {
+    if (rank == 1) return AppColors.gold;
+    if (rank == 2) return AppColors.softBlue;
+    if (rank == 3) return AppColors.amber;
+    return AppColors.purple;
   }
 }

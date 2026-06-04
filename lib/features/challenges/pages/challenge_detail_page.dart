@@ -190,7 +190,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryGreen,
-                foregroundColor: AppColors.darkGreen,
+                foregroundColor: AppColors.background,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -345,6 +345,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
 
   Widget _buildHeaderCard(ChallengeModel challenge) {
     return SoftGradientCard(
+      gradientColors: const [Color(0xFF2A2116), Color(0xFF3A2B18)],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -354,12 +355,12 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.18),
+                  color: AppColors.amber.withValues(alpha: 0.16),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
                   Icons.emoji_events_rounded,
-                  color: Colors.white,
+                  color: AppColors.amber,
                   size: 28,
                 ),
               ),
@@ -369,13 +370,13 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: AppColors.amber.withValues(alpha: 0.16),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   challenge.category,
                   style: AppTextStyles.labelSmall.copyWith(
-                    color: Colors.white,
+                    color: AppColors.amber,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -463,7 +464,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
             value: value,
             progressColor: isCompleted
                 ? AppColors.primaryGreen
-                : AppColors.softMint,
+                : AppColors.primaryGreen,
             backgroundColor: AppColors.darkGreen,
           ),
           const SizedBox(height: 12),
@@ -531,7 +532,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
   }) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.primaryGreen, size: 20),
+        Icon(icon, color: AppColors.amber, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
@@ -563,6 +564,8 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
         text: 'Join Challenge',
         isLoading: _isJoining,
         onPressed: _joinChallenge,
+        backgroundColor: AppColors.amber,
+        foregroundColor: AppColors.background,
       );
     }
 
@@ -578,6 +581,8 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
         SecondaryButton(
           text: 'View Progress Statistics',
           onPressed: _goToStatisticsPage,
+          foregroundColor: AppColors.purple,
+          borderColor: AppColors.purple.withValues(alpha: 0.55),
         ),
       ],
     );
@@ -638,6 +643,9 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                   itemBuilder: (context, index) {
                     final participant = participants[index];
                     final isCompleted = participant.status == 'completed';
+                    final rankAccent = index == 0
+                        ? AppColors.gold
+                        : (index == 1 ? AppColors.purple : AppColors.primaryGreen);
 
                     return Row(
                       children: [
@@ -645,9 +653,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                           width: 36,
                           height: 36,
                           decoration: BoxDecoration(
-                            color: AppColors.primaryGreen.withValues(
-                              alpha: 0.1,
-                            ),
+                            color: rankAccent.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                             border: Border.all(color: AppColors.borderSoft),
                           ),
@@ -655,7 +661,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                             child: Text(
                               '${index + 1}',
                               style: AppTextStyles.labelLarge.copyWith(
-                                color: AppColors.primaryGreen,
+                                color: rankAccent,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

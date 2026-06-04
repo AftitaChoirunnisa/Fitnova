@@ -3,22 +3,37 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  static const Color deepBackground = Color(0xFF061A16);
-  static const Color darkGreen = Color(0xFF0B2A23);
-  static const Color softCard = Color(0xFF103C32);
-  static const Color cardSecondary = Color(0xFF16483C);
-  static const Color primaryGreen = Color(0xFF4CD58A);
-  static const Color mediumGreen = Color(0xFF1F7A5C);
-  static const Color softMint = Color(0xFFA7F3C5);
-  static const Color textPrimary = Color(0xFFF2FFF8);
-  static const Color textSecondary = Color(0xFFA8BDB4);
-  static const Color textMuted = Color(0xFF6F8A80);
-  static const Color lightSurface = Color(0xFFEEF7F1);
-  static const Color borderSoft = Color(0xFF245B4B);
-  static const Color danger = Color(0xFFE85D5D);
-  static const Color warning = Color(0xFFEACB6B);
+  static const Color background = Color(0xFF0B1115);
+  static const Color backgroundAlt = Color(0xFF101820);
+  static const Color surface = Color(0xFF16222A);
+  static const Color surfaceElevated = Color(0xFF1D2B34);
+  static const Color border = Color(0xFF2D3F49);
 
-  // Backward compatibility mappings
+  static const Color primary = Color(0xFF35D07F);
+  static const Color mint = Color(0xFF7BE0AD);
+  static const Color amber = Color(0xFFF5B85B);
+  static const Color coral = Color(0xFFF06B5B);
+  static const Color softBlue = Color(0xFF6EA8FE);
+  static const Color purple = Color(0xFFA78BFA);
+  static const Color gold = Color(0xFFF4C95D);
+
+  static const Color textPrimary = Color(0xFFF4F7F5);
+  static const Color textSecondary = Color(0xFFAEB8B3);
+  static const Color textMuted = Color(0xFF7D8A84);
+  static const Color lightSurface = Color(0xFFEEF7F1);
+  static const Color danger = coral;
+  static const Color success = primary;
+  static const Color warning = amber;
+
+  // Backward compatibility mappings for older UI files.
+  static const Color deepBackground = background;
+  static const Color darkGreen = backgroundAlt;
+  static const Color softCard = surface;
+  static const Color cardSecondary = surfaceElevated;
+  static const Color primaryGreen = primary;
+  static const Color mediumGreen = mint;
+  static const Color softMint = mint;
+  static const Color borderSoft = border;
   static const Color primaryDark = deepBackground;
   static const Color secondaryDark = darkGreen;
   static const Color cardDark = softCard;
@@ -28,14 +43,7 @@ class AppColors {
   static const Color textGray = textSecondary;
   static const Color borderGreen = borderSoft;
 
-  static const Color primary = primaryGreen;
-  static const Color secondary = mediumGreen;
-  static const Color accent = softMint;
-
-  static const Color background = deepBackground;
-  static const Color surface = softCard;
-
-  static const Color success = primaryGreen;
+  static const Color secondary = softBlue;
+  static const Color accent = purple;
   static const Color error = danger;
-  static const Color border = borderSoft;
 }

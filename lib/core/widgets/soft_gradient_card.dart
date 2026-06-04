@@ -8,6 +8,7 @@ class SoftGradientCard extends StatelessWidget {
   final double? height;
   final AlignmentGeometry? begin;
   final AlignmentGeometry? end;
+  final List<Color>? gradientColors;
 
   const SoftGradientCard({
     super.key,
@@ -17,10 +18,14 @@ class SoftGradientCard extends StatelessWidget {
     this.height,
     this.begin,
     this.end,
+    this.gradientColors,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colors =
+        gradientColors ?? const [AppColors.surface, AppColors.surfaceElevated];
+
     return Container(
       width: width,
       height: height,
@@ -28,7 +33,7 @@ class SoftGradientCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: LinearGradient(
-          colors: const [AppColors.darkGreen, AppColors.mediumGreen],
+          colors: colors,
           begin: begin ?? Alignment.topLeft,
           end: end ?? Alignment.bottomRight,
         ),

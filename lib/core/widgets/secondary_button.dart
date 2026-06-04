@@ -7,6 +7,8 @@ class SecondaryButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isLoading;
   final IconData? icon;
+  final Color? foregroundColor;
+  final Color? borderColor;
 
   const SecondaryButton({
     super.key,
@@ -14,25 +16,29 @@ class SecondaryButton extends StatelessWidget {
     required this.onPressed,
     this.isLoading = false,
     this.icon,
+    this.foregroundColor,
+    this.borderColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final fg = foregroundColor ?? AppColors.softMint;
+    final border = borderColor ?? AppColors.borderSoft;
     final style = OutlinedButton.styleFrom(
       backgroundColor: Colors.transparent,
-      foregroundColor: AppColors.softMint,
-      side: const BorderSide(color: AppColors.borderSoft, width: 1.5),
+      foregroundColor: fg,
+      side: BorderSide(color: border, width: 1.5),
       minimumSize: const Size(double.infinity, 54),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
     );
 
     final Widget child = isLoading
-        ? const SizedBox(
+        ? SizedBox(
             width: 24,
             height: 24,
             child: CircularProgressIndicator(
               strokeWidth: 2.5,
-              color: AppColors.softMint,
+              color: fg,
             ),
           )
         : Row(
@@ -45,7 +51,7 @@ class SecondaryButton extends StatelessWidget {
               Text(
                 text,
                 style: AppTextStyles.titleLarge.copyWith(
-                  color: AppColors.softMint,
+                  color: fg,
                   fontWeight: FontWeight.bold,
                 ),
               ),

@@ -126,6 +126,17 @@ class _HomePageState extends State<HomePage>
     return Icons.fitness_center_rounded;
   }
 
+  Color _getSportColor(String type) {
+    final t = type.toLowerCase();
+    if (t.contains('run') || t.contains('lari')) return AppColors.primaryGreen;
+    if (t.contains('walk') || t.contains('jalan')) return AppColors.mint;
+    if (t.contains('cycl') || t.contains('sepeda')) return AppColors.softBlue;
+    if (t.contains('swim') || t.contains('renang')) return AppColors.softBlue;
+    if (t.contains('gym') || t.contains('workout')) return AppColors.purple;
+    if (t.contains('yoga')) return AppColors.amber;
+    return AppColors.primaryGreen;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<UserModel?>(
@@ -144,7 +155,7 @@ class _HomePageState extends State<HomePage>
             : 'FitNova User';
 
         return Scaffold(
-          backgroundColor: Colors.transparent,
+          backgroundColor: AppColors.background,
           body: RefreshIndicator(
             onRefresh: _refreshData,
             color: AppColors.primaryGreen,
@@ -275,6 +286,7 @@ class _HomePageState extends State<HomePage>
     final double progress = (currentDuration / weeklyTargetMin).clamp(0.0, 1.0);
 
     return SoftGradientCard(
+      gradientColors: const [AppColors.surface, AppColors.surfaceElevated],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -373,6 +385,8 @@ class _HomePageState extends State<HomePage>
           child: FeatureIconButton(
             icon: Icons.add_rounded,
             label: 'Add Activity',
+            iconColor: AppColors.primaryGreen,
+            backgroundColor: AppColors.primaryGreen.withValues(alpha: 0.12),
             onTap: _goToAddActivityPage,
           ),
         ),
@@ -380,6 +394,8 @@ class _HomePageState extends State<HomePage>
           child: FeatureIconButton(
             icon: Icons.emoji_events_rounded,
             label: 'Challenge',
+            iconColor: AppColors.amber,
+            backgroundColor: AppColors.amber.withValues(alpha: 0.12),
             onTap: _goToChallengePage,
           ),
         ),
@@ -387,6 +403,8 @@ class _HomePageState extends State<HomePage>
           child: FeatureIconButton(
             icon: Icons.leaderboard_rounded,
             label: 'Leaderboard',
+            iconColor: AppColors.purple,
+            backgroundColor: AppColors.purple.withValues(alpha: 0.12),
             onTap: _goToLeaderboardPage,
           ),
         ),
@@ -394,6 +412,8 @@ class _HomePageState extends State<HomePage>
           child: FeatureIconButton(
             icon: Icons.person_rounded,
             label: 'Profile',
+            iconColor: AppColors.softBlue,
+            backgroundColor: AppColors.softBlue.withValues(alpha: 0.12),
             onTap: _goToProfilePage,
           ),
         ),
@@ -409,7 +429,7 @@ class _HomePageState extends State<HomePage>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
           gradient: const LinearGradient(
-            colors: [AppColors.mediumGreen, AppColors.borderSoft],
+            colors: [Color(0xFF2A2116), Color(0xFF3A2B18)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -444,13 +464,13 @@ class _HomePageState extends State<HomePage>
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryGreen.withValues(alpha: 0.2),
+                        color: AppColors.amber.withValues(alpha: 0.16),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         'NEW',
                         style: AppTextStyles.labelSmall.copyWith(
-                          color: AppColors.primaryGreen,
+                          color: AppColors.amber,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -484,13 +504,13 @@ class _HomePageState extends State<HomePage>
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryGreen,
+                    color: AppColors.amber,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     'Join Now',
                     style: AppTextStyles.labelLarge.copyWith(
-                      color: AppColors.darkGreen,
+                      color: AppColors.background,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -581,6 +601,7 @@ class _HomePageState extends State<HomePage>
               separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final activity = recent[index];
+                final sportColor = _getSportColor(activity.sportType);
                 return SoftCard(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,
@@ -591,12 +612,12 @@ class _HomePageState extends State<HomePage>
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: AppColors.primaryGreen.withValues(alpha: 0.12),
+                          color: sportColor.withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           _getSportIcon(activity.sportType),
-                          color: AppColors.primaryGreen,
+                          color: sportColor,
                           size: 20,
                         ),
                       ),
@@ -659,7 +680,7 @@ class _HomePageState extends State<HomePage>
         children: [
           const Icon(
             Icons.lightbulb_outline_rounded,
-            color: AppColors.softMint,
+            color: AppColors.softBlue,
             size: 24,
           ),
           const SizedBox(width: 12),
@@ -670,7 +691,7 @@ class _HomePageState extends State<HomePage>
                 Text(
                   'Weekly Insight',
                   style: AppTextStyles.titleMedium.copyWith(
-                    color: AppColors.softMint,
+                    color: AppColors.softBlue,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

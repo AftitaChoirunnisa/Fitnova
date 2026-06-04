@@ -185,10 +185,29 @@ class _ActivityListPageState extends State<ActivityListPage> {
     }
   }
 
+  Color _getSportColor(String sportType) {
+    switch (sportType) {
+      case 'Lari':
+        return AppColors.primaryGreen;
+      case 'Jalan Kaki':
+        return AppColors.mint;
+      case 'Bersepeda':
+      case 'Renang':
+        return AppColors.softBlue;
+      case 'Gym':
+      case 'Workout Rumah':
+        return AppColors.purple;
+      case 'Yoga':
+        return AppColors.amber;
+      default:
+        return AppColors.primaryGreen;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF061A16),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: StreamBuilder<List<ActivityModel>>(
           stream: _activityService.getUserActivitiesStream(),
@@ -267,34 +286,34 @@ class _ActivityListPageState extends State<ActivityListPage> {
               width: 68,
               height: 68,
               decoration: BoxDecoration(
-                color: const Color(0xFF103C32),
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: const Color(0xFF245B4B)),
+                border: Border.all(color: AppColors.borderSoft),
               ),
               child: const Icon(
                 Icons.search_off_rounded,
                 size: 32,
-                color: Color(0xFF4CD58A),
+                color: AppColors.softBlue,
               ),
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Data tidak ditemukan',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Color(0xFFF2FFF8),
+              style: AppTextStyles.titleLarge.copyWith(
+                color: AppColors.textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 6),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Text(
                 'Coba gunakan kata kunci atau filter olahraga yang berbeda.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFFA8BDB4),
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
                   fontSize: 13,
                   height: 1.3,
                 ),
@@ -411,7 +430,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
                   size: 20,
                 ),
                 filled: true,
-                fillColor: AppColors.darkGreen,
+                fillColor: AppColors.surface,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
@@ -487,6 +506,8 @@ class _ActivityListPageState extends State<ActivityListPage> {
   }
 
   Widget _buildActivityCard(BuildContext context, ActivityModel activity) {
+    final sportColor = _getSportColor(activity.sportType);
+
     return SoftCard(
       padding: EdgeInsets.zero,
       child: InkWell(
@@ -502,13 +523,13 @@ class _ActivityListPageState extends State<ActivityListPage> {
                   width: 50,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryGreen.withValues(alpha: 0.1),
+                    color: sportColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColors.borderSoft),
                   ),
                   child: Icon(
                     _getSportIcon(activity.sportType),
-                    color: AppColors.primaryGreen,
+                    color: sportColor,
                     size: 24,
                   ),
                 ),
