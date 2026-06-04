@@ -8,7 +8,9 @@ import '../../../models/activity_model.dart';
 import '../../activities/services/activity_service.dart';
 
 class StatisticsPage extends StatefulWidget {
-  const StatisticsPage({super.key});
+  final bool showAppBar;
+
+  const StatisticsPage({super.key, this.showAppBar = true});
 
   @override
   State<StatisticsPage> createState() => _StatisticsPageState();
@@ -22,16 +24,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Statistik Progress'),
-      ),
+      appBar: widget.showAppBar
+          ? AppBar(title: const Text('Statistik Progress'))
+          : null,
       body: StreamBuilder<List<ActivityModel>>(
         stream: _activityService.getUserActivitiesStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingWidget(
-              message: 'Memuat statistik...',
-            );
+            return const LoadingWidget(message: 'Memuat statistik...');
           }
 
           if (snapshot.hasError) {
@@ -62,8 +62,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
           final totalCalories = _calculateTotalCalories(activities);
           final currentStreak = _calculateCurrentStreak(activities);
           final weeklyDuration = _calculateThisWeekDuration(activities);
-          final weeklyProgress =
-              (weeklyDuration / weeklyTargetDuration).clamp(0.0, 1.0);
+          final weeklyProgress = (weeklyDuration / weeklyTargetDuration).clamp(
+            0.0,
+            1.0,
+          );
           final insight = _generateInsight(activities);
 
           return RefreshIndicator(
@@ -107,10 +109,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            AppColors.primary,
-            AppColors.secondary,
-          ],
+          colors: [AppColors.primary, AppColors.secondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -139,17 +138,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
               Text(
                 'Statistik FitNova',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Pantau progress olahraga, durasi, kalori, streak, dan insight kebiasaanmu.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      height: 1.5,
-                    ),
+                  color: Colors.white.withValues(alpha: 0.9),
+                  height: 1.5,
+                ),
               ),
             ],
           ),
@@ -230,18 +229,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
-              ),
+              child: Icon(icon, color: color, size: 24),
             ),
             const Spacer(),
             Text(
               title,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 2),
             Row(
@@ -253,8 +248,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w900,
-                        ),
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -263,8 +258,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   child: Text(
                     subtitle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ],
@@ -293,10 +288,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             ),
             const SizedBox(height: 16),
             TweenAnimationBuilder<double>(
-              tween: Tween<double>(
-                begin: 0,
-                end: weeklyProgress,
-              ),
+              tween: Tween<double>(begin: 0, end: weeklyProgress),
               duration: const Duration(milliseconds: 900),
               curve: Curves.easeOutCubic,
               builder: (context, value, _) {
@@ -307,23 +299,24 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       value: value,
                       minHeight: 14,
                       borderRadius: BorderRadius.circular(99),
-                      backgroundColor:
-                          AppColors.primary.withValues(alpha: 0.12),
+                      backgroundColor: AppColors.primary.withValues(
+                        alpha: 0.12,
+                      ),
                       color: value >= 1 ? AppColors.success : AppColors.primary,
                     ),
                     const SizedBox(height: 10),
                     Text(
                       '$weeklyDuration / $weeklyTargetDuration menit',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${(value * 100).toStringAsFixed(0)}% dari target olahraga mingguan.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 );
@@ -342,25 +335,20 @@ class _StatisticsPageState extends State<StatisticsPage> {
       decoration: BoxDecoration(
         color: AppColors.accent.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: AppColors.accent.withValues(alpha: 0.22),
-        ),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.22)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.lightbulb_outline_rounded,
-            color: AppColors.accent,
-          ),
+          const Icon(Icons.lightbulb_outline_rounded, color: AppColors.accent),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               insight,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    height: 1.5,
-                    fontWeight: FontWeight.w500,
-                  ),
+                height: 1.5,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
@@ -398,10 +386,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                     show: true,
                     drawVerticalLine: false,
                     getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: AppColors.border,
-                        strokeWidth: 1,
-                      );
+                      return FlLine(color: AppColors.border, strokeWidth: 1);
                     },
                   ),
                   titlesData: FlTitlesData(
@@ -477,9 +462,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
             const SizedBox(height: 8),
             Text(
               'Grafik menunjukkan total durasi olahraga per hari dalam satuan menit.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -494,18 +479,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: AppColors.primary,
-          size: 22,
-        ),
+        Icon(icon, color: AppColors.primary, size: 22),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
         ),
       ],
@@ -535,18 +516,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
       startOfWeek.day,
     );
 
-    return activities.where((activity) {
-      final date = DateTime(
-        activity.activityDate.year,
-        activity.activityDate.month,
-        activity.activityDate.day,
-      );
+    return activities
+        .where((activity) {
+          final date = DateTime(
+            activity.activityDate.year,
+            activity.activityDate.month,
+            activity.activityDate.day,
+          );
 
-      return date.isAtSameMomentAs(startDate) || date.isAfter(startDate);
-    }).fold<int>(
-      0,
-      (total, activity) => total + activity.duration,
-    );
+          return date.isAtSameMomentAs(startDate) || date.isAfter(startDate);
+        })
+        .fold<int>(0, (total, activity) => total + activity.duration);
   }
 
   int _calculatePreviousWeekDuration(List<ActivityModel> activities) {
@@ -562,21 +542,20 @@ class _StatisticsPageState extends State<StatisticsPage> {
     final previousWeekStart = thisWeekStart.subtract(const Duration(days: 7));
     final previousWeekEnd = thisWeekStart.subtract(const Duration(days: 1));
 
-    return activities.where((activity) {
-      final date = DateTime(
-        activity.activityDate.year,
-        activity.activityDate.month,
-        activity.activityDate.day,
-      );
+    return activities
+        .where((activity) {
+          final date = DateTime(
+            activity.activityDate.year,
+            activity.activityDate.month,
+            activity.activityDate.day,
+          );
 
-      return (date.isAtSameMomentAs(previousWeekStart) ||
-              date.isAfter(previousWeekStart)) &&
-          (date.isAtSameMomentAs(previousWeekEnd) ||
-              date.isBefore(previousWeekEnd));
-    }).fold<int>(
-      0,
-      (total, activity) => total + activity.duration,
-    );
+          return (date.isAtSameMomentAs(previousWeekStart) ||
+                  date.isAfter(previousWeekStart)) &&
+              (date.isAtSameMomentAs(previousWeekEnd) ||
+                  date.isBefore(previousWeekEnd));
+        })
+        .fold<int>(0, (total, activity) => total + activity.duration);
   }
 
   int _calculateCurrentStreak(List<ActivityModel> activities) {
@@ -668,18 +647,17 @@ class _StatisticsPageState extends State<StatisticsPage> {
       final day = now.subtract(Duration(days: i));
       final dayOnly = DateTime(day.year, day.month, day.day);
 
-      final totalDuration = activities.where((activity) {
-        final activityDay = DateTime(
-          activity.activityDate.year,
-          activity.activityDate.month,
-          activity.activityDate.day,
-        );
+      final totalDuration = activities
+          .where((activity) {
+            final activityDay = DateTime(
+              activity.activityDate.year,
+              activity.activityDate.month,
+              activity.activityDate.day,
+            );
 
-        return activityDay == dayOnly;
-      }).fold<int>(
-        0,
-        (total, activity) => total + activity.duration,
-      );
+            return activityDay == dayOnly;
+          })
+          .fold<int>(0, (total, activity) => total + activity.duration);
 
       result.add(
         _DailyDuration(
@@ -734,8 +712,5 @@ class _DailyDuration {
   final String dayLabel;
   final int duration;
 
-  _DailyDuration({
-    required this.dayLabel,
-    required this.duration,
-  });
+  _DailyDuration({required this.dayLabel, required this.duration});
 }

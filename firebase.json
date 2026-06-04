@@ -1,1 +1,28 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"fitnova-dba8d","appId":"1:1011634961119:android:a984f0303abc06ecc7c76a","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"fitnova-dba8d","configurations":{"android":"1:1011634961119:android:a984f0303abc06ecc7c76a","ios":"1:1011634961119:ios:76c198d10f90d7c8c7c76a","macos":"1:1011634961119:ios:76c198d10f90d7c8c7c76a","web":"1:1011634961119:web:9e7cba5120f6b970c7c76a","windows":"1:1011634961119:web:9ad5f0f09302c628c7c76a"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "fitnova-dba8d",
+          "appId": "1:1011634961119:android:a984f0303abc06ecc7c76a",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "fitnova-dba8d",
+          "configurations": {
+            "android": "1:1011634961119:android:a984f0303abc06ecc7c76a",
+            "ios": "1:1011634961119:ios:76c198d10f90d7c8c7c76a",
+            "macos": "1:1011634961119:ios:76c198d10f90d7c8c7c76a",
+            "web": "1:1011634961119:web:9e7cba5120f6b970c7c76a",
+            "windows": "1:1011634961119:web:9ad5f0f09302c628c7c76a"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}

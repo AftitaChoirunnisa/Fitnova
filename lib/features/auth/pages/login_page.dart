@@ -45,14 +45,8 @@ class _LoginPageState extends State<LoginPage>
       curve: Curves.easeOut,
     );
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.96,
-      end: 1,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutBack,
-      ),
+    _scaleAnimation = Tween<double>(begin: 0.96, end: 1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
     );
 
     _animationController.forward();
@@ -109,9 +103,7 @@ class _LoginPageState extends State<LoginPage>
   void _goToRegisterPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const RegisterPage(),
-      ),
+      MaterialPageRoute(builder: (_) => const RegisterPage()),
     );
   }
 
@@ -127,7 +119,8 @@ class _LoginPageState extends State<LoginPage>
               padding: const EdgeInsets.all(24),
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height -
+                  minHeight:
+                      MediaQuery.of(context).size.height -
                       MediaQuery.of(context).padding.top -
                       MediaQuery.of(context).padding.bottom -
                       48,
@@ -158,10 +151,7 @@ class _LoginPageState extends State<LoginPage>
           height: 86,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [
-                AppColors.primary,
-                AppColors.secondary,
-              ],
+              colors: [AppColors.primary, AppColors.secondary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -177,17 +167,17 @@ class _LoginPageState extends State<LoginPage>
         Text(
           AppStrings.appName,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
-              ),
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           'Masuk dan lanjutkan progress olahragamu',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );
@@ -230,11 +220,7 @@ class _LoginPageState extends State<LoginPage>
             ),
           ),
           const SizedBox(height: 24),
-          CustomButton(
-            text: 'Login',
-            isLoading: _isLoading,
-            onPressed: _login,
-          ),
+          CustomButton(text: 'Login', isLoading: _isLoading, onPressed: _login),
         ],
       ),
     );
@@ -246,9 +232,9 @@ class _LoginPageState extends State<LoginPage>
       children: [
         Text(
           'Belum punya akun?',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
         ),
         TextButton(
           onPressed: _isLoading ? null : _goToRegisterPage,

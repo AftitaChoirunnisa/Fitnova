@@ -2,7 +2,8 @@ class AppStrings {
   AppStrings._();
 
   static const String appName = 'FitNova';
-  static const String appTagline = 'Bangun kebiasaan olahraga yang lebih konsisten';
+  static const String appTagline =
+      'Bangun kebiasaan olahraga yang lebih konsisten';
 
   static const String login = 'Login';
   static const String register = 'Register';

@@ -30,20 +30,20 @@ class EmptyStateWidget extends StatelessWidget {
               width: 88,
               height: 88,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.12),
+                color: AppColors.neonGreen.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(28),
+                border: Border.all(color: AppColors.borderGreen),
               ),
-              child: Icon(
-                icon,
-                size: 42,
-                color: AppColors.primary,
-              ),
+              child: Icon(icon, size: 42, color: AppColors.neonGreen),
             ),
             const SizedBox(height: 20),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(
+                    color: AppColors.textWhite,
                     fontWeight: FontWeight.w700,
                   ),
             ),
@@ -51,16 +51,13 @@ class EmptyStateWidget extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textGray),
             ),
             if (buttonText != null && onPressed != null) ...[
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: onPressed,
-                child: Text(buttonText!),
-              ),
+              ElevatedButton(onPressed: onPressed, child: Text(buttonText!)),
             ],
           ],
         ),

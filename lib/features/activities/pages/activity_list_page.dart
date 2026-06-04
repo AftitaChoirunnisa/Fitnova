@@ -38,20 +38,14 @@ class _ActivityListPageState extends State<ActivityListPage> {
   void _goToAddActivityPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const AddActivityPage(),
-      ),
+      MaterialPageRoute(builder: (_) => const AddActivityPage()),
     );
   }
 
   void _goToEditActivityPage(ActivityModel activity) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => AddActivityPage(
-          activity: activity,
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => AddActivityPage(activity: activity)),
     );
   }
 
@@ -59,9 +53,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ActivityDetailPage(
-          activityId: activity.id,
-        ),
+        builder: (_) => ActivityDetailPage(activityId: activity.id),
       ),
     );
   }
@@ -86,9 +78,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
               onPressed: () {
                 Navigator.pop(context, true);
               },
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.error,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.error),
               child: const Text('Hapus'),
             ),
           ],
@@ -106,9 +96,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Aktivitas berhasil dihapus.'),
-        ),
+        const SnackBar(content: Text('Aktivitas berhasil dihapus.')),
       );
     } catch (e) {
       if (!mounted) return;
@@ -124,9 +112,10 @@ class _ActivityListPageState extends State<ActivityListPage> {
 
   List<ActivityModel> _filterActivities(List<ActivityModel> activities) {
     return activities.where((activity) {
-      final matchesSearch = activity.sportType
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase()) ||
+      final matchesSearch =
+          activity.sportType.toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          ) ||
           activity.note.toLowerCase().contains(_searchQuery.toLowerCase());
 
       final matchesFilter = _selectedFilter == 'Semua'
@@ -144,9 +133,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
         stream: _activityService.getUserActivitiesStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingWidget(
-              message: 'Memuat aktivitas...',
-            );
+            return const LoadingWidget(message: 'Memuat aktivitas...');
           }
 
           if (snapshot.hasError) {
@@ -162,12 +149,8 @@ class _ActivityListPageState extends State<ActivityListPage> {
             },
             child: CustomScrollView(
               slivers: [
-                SliverToBoxAdapter(
-                  child: _buildHeader(context, activities),
-                ),
-                SliverToBoxAdapter(
-                  child: _buildSearchAndFilter(),
-                ),
+                SliverToBoxAdapter(child: _buildHeader(context, activities)),
+                SliverToBoxAdapter(child: _buildSearchAndFilter()),
                 if (activities.isEmpty)
                   SliverFillRemaining(
                     hasScrollBody: false,
@@ -225,10 +208,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
     );
   }
 
-  Widget _buildHeader(
-    BuildContext context,
-    List<ActivityModel> activities,
-  ) {
+  Widget _buildHeader(BuildContext context, List<ActivityModel> activities) {
     final totalDuration = activities.fold<int>(
       0,
       (previousValue, activity) => previousValue + activity.duration,
@@ -246,10 +226,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [
-              AppColors.primary,
-              AppColors.secondary,
-            ],
+            colors: [AppColors.primary, AppColors.secondary],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -267,16 +244,16 @@ class _ActivityListPageState extends State<ActivityListPage> {
             Text(
               'Aktivitas Olahraga',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               '${activities.length} aktivitas • $totalDuration menit • $totalCalories kkal',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.9),
-                  ),
+                color: Colors.white.withValues(alpha: 0.9),
+              ),
             ),
           ],
         ),
@@ -324,8 +301,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
                     color: isSelected
                         ? AppColors.primary
                         : AppColors.textSecondary,
-                    fontWeight:
-                        isSelected ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   ),
                   side: BorderSide(
                     color: isSelected ? AppColors.primary : AppColors.border,
@@ -339,10 +315,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
     );
   }
 
-  Widget _buildActivityCard(
-    BuildContext context,
-    ActivityModel activity,
-  ) {
+  Widget _buildActivityCard(BuildContext context, ActivityModel activity) {
     final sportColor = _getSportColor(activity.sportType);
 
     return Card(
@@ -380,15 +353,15 @@ class _ActivityListPageState extends State<ActivityListPage> {
                     Text(
                       activity.sportType,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       DateFormatter.formatDate(activity.activityDate),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -465,11 +438,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
   Widget _buildMiniInfo(IconData icon, String text) {
     return Row(
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: AppColors.textSecondary,
-        ),
+        Icon(icon, size: 16, color: AppColors.textSecondary),
         const SizedBox(width: 4),
         Text(
           text,

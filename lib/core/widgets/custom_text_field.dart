@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_colors.dart';
+
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String label;
@@ -33,7 +35,9 @@ class CustomTextField extends StatelessWidget {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        prefixIcon: prefixIcon == null ? null : Icon(prefixIcon),
+        prefixIcon: prefixIcon == null
+            ? null
+            : Icon(prefixIcon, color: AppColors.softGreen),
       ),
     );
   }

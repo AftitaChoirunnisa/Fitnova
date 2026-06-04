@@ -20,7 +20,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   final List<Widget> _pages = const [
     HomePage(),
     ActivityListPage(),
-    ChallengeListPage(),
+    ChallengeListPage(showAppBar: false),
     LeaderboardPage(),
     ProfilePage(),
   ];
@@ -51,15 +51,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _selectedIndex == 0
-          ? null
-          : AppBar(
-              title: Text(_getPageTitle()),
-            ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
-      ),
+      appBar: _selectedIndex == 0 ? null : AppBar(title: Text(_getPageTitle())),
+      body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: _onItemTapped,
@@ -74,7 +67,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           NavigationDestination(
             icon: Icon(Icons.fitness_center_outlined),
             selectedIcon: Icon(Icons.fitness_center_rounded),
-            label: 'Activity',
+            label: 'Activities',
           ),
           NavigationDestination(
             icon: Icon(Icons.emoji_events_outlined),
@@ -84,7 +77,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           NavigationDestination(
             icon: Icon(Icons.leaderboard_outlined),
             selectedIcon: Icon(Icons.leaderboard_rounded),
-            label: 'Rank',
+            label: 'Leaderboard',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline_rounded),

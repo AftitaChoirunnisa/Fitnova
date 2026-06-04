@@ -32,9 +32,7 @@ class ActivityModel {
       sportType: data['sportType'] ?? '',
       duration: data['duration'] ?? 0,
       calories: data['calories'] ?? 0,
-      activityDate: data['activityDate'] is Timestamp
-          ? (data['activityDate'] as Timestamp).toDate()
-          : DateTime.now(),
+      activityDate: _readDate(data['date'] ?? data['activityDate']),
       note: data['note'] ?? '',
       createdAt: data['createdAt'] is Timestamp
           ? (data['createdAt'] as Timestamp).toDate()
@@ -51,6 +49,7 @@ class ActivityModel {
       'sportType': sportType,
       'duration': duration,
       'calories': calories,
+      'date': Timestamp.fromDate(activityDate),
       'activityDate': Timestamp.fromDate(activityDate),
       'note': note,
       'createdAt': Timestamp.fromDate(createdAt),
@@ -80,5 +79,15 @@ class ActivityModel {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
+  }
+
+  static DateTime _readDate(dynamic value) {
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+    if (value is DateTime) {
+      return value;
+    }
+    return DateTime.now();
   }
 }

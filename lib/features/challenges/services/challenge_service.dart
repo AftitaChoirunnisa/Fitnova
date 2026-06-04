@@ -55,14 +55,14 @@ class ChallengeService {
         .where('challengeId', isEqualTo: challengeId)
         .snapshots()
         .map((snapshot) {
-      final participants = snapshot.docs.map((doc) {
-        return ParticipantModel.fromDocument(doc);
-      }).toList();
+          final participants = snapshot.docs.map((doc) {
+            return ParticipantModel.fromDocument(doc);
+          }).toList();
 
-      participants.sort((a, b) => b.progress.compareTo(a.progress));
+          participants.sort((a, b) => b.progress.compareTo(a.progress));
 
-      return participants;
-    });
+          return participants;
+        });
   }
 
   Stream<List<ParticipantModel>> getMyParticipantsStream() {
@@ -72,14 +72,14 @@ class ChallengeService {
         .where('userId', isEqualTo: userId)
         .snapshots()
         .map((snapshot) {
-      final participants = snapshot.docs.map((doc) {
-        return ParticipantModel.fromDocument(doc);
-      }).toList();
+          final participants = snapshot.docs.map((doc) {
+            return ParticipantModel.fromDocument(doc);
+          }).toList();
 
-      participants.sort((a, b) => b.joinedAt.compareTo(a.joinedAt));
+          participants.sort((a, b) => b.joinedAt.compareTo(a.joinedAt));
 
-      return participants;
-    });
+          return participants;
+        });
   }
 
   Future<void> addChallenge({
@@ -120,9 +120,9 @@ class ChallengeService {
       throw Exception('Kamu hanya bisa mengedit challenge yang kamu buat.');
     }
 
-    await _challengeCollection.doc(challenge.id).update(
-          challenge.copyWith(updatedAt: DateTime.now()).toMap(),
-        );
+    await _challengeCollection
+        .doc(challenge.id)
+        .update(challenge.copyWith(updatedAt: DateTime.now()).toMap());
   }
 
   Future<void> deleteChallenge(ChallengeModel challenge) async {
@@ -223,7 +223,7 @@ class ChallengeService {
       'status': status,
     });
   }
-  
+
   Future<ParticipantModel?> getMyParticipant(String challengeId) async {
     final userId = _currentUserId;
 

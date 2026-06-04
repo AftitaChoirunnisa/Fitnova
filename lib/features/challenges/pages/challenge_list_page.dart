@@ -13,7 +13,9 @@ import 'challenge_detail_page.dart';
 import 'my_challenge_page.dart';
 
 class ChallengeListPage extends StatefulWidget {
-  const ChallengeListPage({super.key});
+  final bool showAppBar;
+
+  const ChallengeListPage({super.key, this.showAppBar = true});
 
   @override
   State<ChallengeListPage> createState() => _ChallengeListPageState();
@@ -38,18 +40,14 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
   void _goToAddChallengePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const AddChallengePage(),
-      ),
+      MaterialPageRoute(builder: (_) => const AddChallengePage()),
     );
   }
 
   void _goToMyChallengePage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const MyChallengePage(),
-      ),
+      MaterialPageRoute(builder: (_) => const MyChallengePage()),
     );
   }
 
@@ -57,9 +55,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ChallengeDetailPage(
-          challengeId: challenge.id,
-        ),
+        builder: (_) => ChallengeDetailPage(challengeId: challenge.id),
       ),
     );
   }
@@ -68,9 +64,9 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
     return challenges.where((challenge) {
       final matchesSearch =
           challenge.title.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-              challenge.description
-                  .toLowerCase()
-                  .contains(_searchQuery.toLowerCase());
+          challenge.description.toLowerCase().contains(
+            _searchQuery.toLowerCase(),
+          );
 
       final matchesCategory = _selectedCategory == 'Semua'
           ? true
@@ -83,13 +79,12 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: widget.showAppBar ? AppBar(title: const Text('Challenge')) : null,
       body: StreamBuilder<List<ChallengeModel>>(
         stream: _challengeService.getChallengesStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingWidget(
-              message: 'Memuat challenge...',
-            );
+            return const LoadingWidget(message: 'Memuat challenge...');
           }
 
           if (snapshot.hasError) {
@@ -110,9 +105,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
               SliverToBoxAdapter(
                 child: _buildHeader(context, challenges.length),
               ),
-              SliverToBoxAdapter(
-                child: _buildSearchAndFilter(),
-              ),
+              SliverToBoxAdapter(child: _buildSearchAndFilter()),
               if (challenges.isEmpty)
                 SliverFillRemaining(
                   hasScrollBody: false,
@@ -176,10 +169,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
         padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [
-              AppColors.secondary,
-              AppColors.primary,
-            ],
+            colors: [AppColors.secondary, AppColors.primary],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -197,16 +187,16 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
             Text(
               'Fitness Challenge',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               '$totalChallenge challenge tersedia untuk meningkatkan motivasi olahraga.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white.withValues(alpha: 0.9),
-                  ),
+                color: Colors.white.withValues(alpha: 0.9),
+              ),
             ),
             const SizedBox(height: 16),
             OutlinedButton.icon(
@@ -264,8 +254,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                     color: isSelected
                         ? AppColors.primary
                         : AppColors.textSecondary,
-                    fontWeight:
-                        isSelected ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   ),
                   side: BorderSide(
                     color: isSelected ? AppColors.primary : AppColors.border,
@@ -279,10 +268,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
     );
   }
 
-  Widget _buildChallengeCard(
-    BuildContext context,
-    ChallengeModel challenge,
-  ) {
+  Widget _buildChallengeCard(BuildContext context, ChallengeModel challenge) {
     return Card(
       child: InkWell(
         onTap: () => _goToDetailPage(challenge),
@@ -318,23 +304,23 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                     Text(
                       challenge.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       challenge.category,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       '${challenge.targetDuration} menit • ${DateFormatter.formatDate(challenge.endDate)}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),

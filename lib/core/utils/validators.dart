@@ -13,9 +13,7 @@ class Validators {
       return 'Email wajib diisi';
     }
 
-    final emailRegex = RegExp(
-      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-    );
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
     if (!emailRegex.hasMatch(value.trim())) {
       return 'Format email tidak valid';

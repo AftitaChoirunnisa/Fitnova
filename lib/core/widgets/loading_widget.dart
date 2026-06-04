@@ -5,10 +5,7 @@ import '../constants/app_colors.dart';
 class LoadingWidget extends StatelessWidget {
   final String? message;
 
-  const LoadingWidget({
-    super.key,
-    this.message,
-  });
+  const LoadingWidget({super.key, this.message});
 
   @override
   Widget build(BuildContext context) {
@@ -16,14 +13,14 @@ class LoadingWidget extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const CircularProgressIndicator(
-            color: AppColors.primary,
-          ),
+          const CircularProgressIndicator(color: AppColors.neonGreen),
           if (message != null) ...[
             const SizedBox(height: 16),
             Text(
               message!,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textGray),
             ),
           ],
         ],

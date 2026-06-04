@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_colors.dart';
+
 class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -21,12 +23,12 @@ class CustomButton extends StatelessWidget {
         onPressed: isLoading ? null : onPressed,
         icon: isLoading
             ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
+          width: 18,
+          height: 18,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: AppColors.primaryDark,
+          ),
               )
             : Icon(icon),
         label: Text(isLoading ? 'Memproses...' : text),
@@ -37,12 +39,12 @@ class CustomButton extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       child: isLoading
           ? const SizedBox(
-              width: 22,
-              height: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: AppColors.primaryDark,
+            ),
             )
           : Text(text),
     );

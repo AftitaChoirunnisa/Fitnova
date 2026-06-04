@@ -21,9 +21,8 @@ class _MyChallengePageState extends State<MyChallengePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ChallengeDetailPage(
-          challengeId: participant.challengeId,
-        ),
+        builder: (_) =>
+            ChallengeDetailPage(challengeId: participant.challengeId),
       ),
     );
   }
@@ -31,16 +30,12 @@ class _MyChallengePageState extends State<MyChallengePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Challenge Saya'),
-      ),
+      appBar: AppBar(title: const Text('Challenge Saya')),
       body: StreamBuilder<List<ParticipantModel>>(
         stream: _challengeService.getMyParticipantsStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingWidget(
-              message: 'Memuat challenge saya...',
-            );
+            return const LoadingWidget(message: 'Memuat challenge saya...');
           }
 
           if (snapshot.hasError) {
@@ -116,18 +111,18 @@ class _MyChallengePageState extends State<MyChallengePage> {
                     Text(
                       'Challenge Diikuti',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w800,
-                          ),
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       '${participant.progress} menit • ${isCompleted ? 'Selesai' : 'Aktif'}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: isCompleted
-                                ? AppColors.success
-                                : AppColors.textSecondary,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        color: isCompleted
+                            ? AppColors.success
+                            : AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),

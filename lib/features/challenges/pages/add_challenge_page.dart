@@ -13,10 +13,7 @@ import '../services/challenge_service.dart';
 class AddChallengePage extends StatefulWidget {
   final ChallengeModel? challenge;
 
-  const AddChallengePage({
-    super.key,
-    this.challenge,
-  });
+  const AddChallengePage({super.key, this.challenge});
 
   @override
   State<AddChallengePage> createState() => _AddChallengePageState();
@@ -211,9 +208,7 @@ class _AddChallengePageState extends State<AddChallengePage> {
     final title = _isEditMode ? 'Edit Challenge' : 'Buat Challenge';
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -235,10 +230,7 @@ class _AddChallengePageState extends State<AddChallengePage> {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            AppColors.secondary,
-            AppColors.primary,
-          ],
+          colors: [AppColors.secondary, AppColors.primary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -266,10 +258,10 @@ class _AddChallengePageState extends State<AddChallengePage> {
                   ? 'Perbarui challenge agar targetnya lebih sesuai.'
                   : 'Buat challenge olahraga agar pengguna lebih termotivasi.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    height: 1.5,
-                    fontWeight: FontWeight.w500,
-                  ),
+                color: Colors.white,
+                height: 1.5,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],

@@ -8,6 +8,7 @@ import '../../../core/widgets/loading_widget.dart';
 import '../../../models/user_model.dart';
 import '../../../services/firebase_auth_service.dart';
 import '../../activities/pages/add_activity_page.dart';
+import '../../challenges/pages/challenge_list_page.dart';
 import '../../statistics/pages/statistics_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -33,9 +34,7 @@ class _HomePageState extends State<HomePage>
   void _goToStatisticsPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const StatisticsPage(),
-      ),
+      MaterialPageRoute(builder: (_) => const StatisticsPage()),
     );
   }
 
@@ -55,15 +54,13 @@ class _HomePageState extends State<HomePage>
       curve: Curves.easeOut,
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.04),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     _animationController.forward();
   }
@@ -80,20 +77,17 @@ class _HomePageState extends State<HomePage>
     });
   }
 
-  void _showComingSoon(String featureName) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$featureName akan dibuat di tahap berikutnya.'),
-      ),
-    );
-  }
-
   void _goToAddActivityPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => const AddActivityPage(),
-      ),
+      MaterialPageRoute(builder: (_) => const AddActivityPage()),
+    );
+  }
+
+  void _goToChallengePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const ChallengeListPage()),
     );
   }
 
@@ -104,9 +98,7 @@ class _HomePageState extends State<HomePage>
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: LoadingWidget(
-              message: 'Memuat dashboard...',
-            ),
+            body: LoadingWidget(message: 'Memuat dashboard...'),
           );
         }
 
@@ -162,28 +154,22 @@ class _HomePageState extends State<HomePage>
           height: 46,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
-              colors: [
-                AppColors.primary,
-                AppColors.secondary,
-              ],
+              colors: [AppColors.primary, AppColors.secondary],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Icon(
-            Icons.fitness_center_rounded,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.fitness_center_rounded, color: Colors.white),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             AppStrings.appName,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
-                ),
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
           ),
         ),
         CircleAvatar(
@@ -209,10 +195,7 @@ class _HomePageState extends State<HomePage>
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            AppColors.primary,
-            AppColors.secondary,
-          ],
+          colors: [AppColors.primary, AppColors.secondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -242,16 +225,16 @@ class _HomePageState extends State<HomePage>
               Text(
                 'Halo, $name!',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Siap olahraga hari ini?',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
               ),
               const SizedBox(height: 20),
               ElevatedButton.icon(
@@ -338,18 +321,14 @@ class _HomePageState extends State<HomePage>
                 color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(13),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 22,
-              ),
+              child: Icon(icon, color: color, size: 22),
             ),
             const Spacer(),
             Text(
               title,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 2),
             Row(
@@ -358,9 +337,9 @@ class _HomePageState extends State<HomePage>
                 Text(
                   value,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                      ),
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(width: 4),
                 Padding(
@@ -368,8 +347,8 @@ class _HomePageState extends State<HomePage>
                   child: Text(
                     subtitle,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               ],
@@ -394,10 +373,7 @@ class _HomePageState extends State<HomePage>
             ),
             const SizedBox(height: 16),
             TweenAnimationBuilder<double>(
-              tween: Tween<double>(
-                begin: 0,
-                end: weeklyTargetProgress,
-              ),
+              tween: Tween<double>(begin: 0, end: weeklyTargetProgress),
               duration: const Duration(milliseconds: 900),
               curve: Curves.easeOutCubic,
               builder: (context, value, _) {
@@ -408,16 +384,17 @@ class _HomePageState extends State<HomePage>
                       value: value,
                       minHeight: 12,
                       borderRadius: BorderRadius.circular(99),
-                      backgroundColor:
-                          AppColors.primary.withValues(alpha: 0.12),
+                      backgroundColor: AppColors.primary.withValues(
+                        alpha: 0.12,
+                      ),
                       color: AppColors.primary,
                     ),
                     const SizedBox(height: 10),
                     Text(
                       '${(value * 100).toStringAsFixed(0)}% dari target mingguan',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 );
@@ -426,9 +403,9 @@ class _HomePageState extends State<HomePage>
             const SizedBox(height: 8),
             Text(
               'Target sementara: 150 menit olahraga per minggu.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ),
@@ -443,25 +420,20 @@ class _HomePageState extends State<HomePage>
       decoration: BoxDecoration(
         color: AppColors.accent.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(
-          color: AppColors.accent.withValues(alpha: 0.20),
-        ),
+        border: Border.all(color: AppColors.accent.withValues(alpha: 0.20)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            Icons.lightbulb_outline_rounded,
-            color: AppColors.accent,
-          ),
+          const Icon(Icons.lightbulb_outline_rounded, color: AppColors.accent),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               'Insight hari ini: Mulai dengan olahraga ringan 10 menit agar kebiasaan olahraga kamu terbentuk secara konsisten.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textPrimary,
-                    height: 1.5,
-                  ),
+                color: AppColors.textPrimary,
+                height: 1.5,
+              ),
             ),
           ),
         ],
@@ -508,7 +480,7 @@ class _HomePageState extends State<HomePage>
           icon: Icons.emoji_events_rounded,
           title: 'Challenge',
           subtitle: 'Lihat dan ikuti challenge olahraga',
-          onTap: () => _showComingSoon('Challenge'),
+          onTap: _goToChallengePage,
         ),
       ],
     );
@@ -530,9 +502,7 @@ class _HomePageState extends State<HomePage>
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            border: Border.all(
-              color: AppColors.border,
-            ),
+            border: Border.all(color: AppColors.border),
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
@@ -544,10 +514,7 @@ class _HomePageState extends State<HomePage>
                   color: AppColors.primary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(
-                  icon,
-                  color: AppColors.primary,
-                ),
+                child: Icon(icon, color: AppColors.primary),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -557,14 +524,14 @@ class _HomePageState extends State<HomePage>
                     Text(
                       title,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                          ),
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
+                        color: AppColors.textSecondary,
+                      ),
                     ),
                   ],
                 ),
@@ -612,15 +579,15 @@ class _HomePageState extends State<HomePage>
                       Text(
                         'Belum ada challenge aktif',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                            ),
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Nanti data challenge akan diambil dari Firestore.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ],
                   ),
@@ -670,9 +637,9 @@ class _HomePageState extends State<HomePage>
           Expanded(
             child: Text(
               'Leaderboard akan aktif setelah data aktivitas pengguna tersedia.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
           ),
         ],
@@ -687,18 +654,14 @@ class _HomePageState extends State<HomePage>
   }) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: AppColors.primary,
-          size: 22,
-        ),
+        Icon(icon, color: AppColors.primary, size: 22),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
         ),
       ],

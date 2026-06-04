@@ -6,16 +6,14 @@ import '../../../core/widgets/empty_state_widget.dart';
 import '../../../core/widgets/loading_widget.dart';
 import '../../../models/challenge_model.dart';
 import '../../../models/participant_model.dart';
+import '../../statistics/pages/statistics_page.dart';
 import '../services/challenge_service.dart';
 import 'add_challenge_page.dart';
 
 class ChallengeDetailPage extends StatefulWidget {
   final String challengeId;
 
-  const ChallengeDetailPage({
-    super.key,
-    required this.challengeId,
-  });
+  const ChallengeDetailPage({super.key, required this.challengeId});
 
   @override
   State<ChallengeDetailPage> createState() => _ChallengeDetailPageState();
@@ -36,11 +34,9 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Berhasil join challenge.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Berhasil join challenge.')));
 
       setState(() {});
     } catch (e) {
@@ -64,11 +60,14 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
   void _goToEditChallenge(ChallengeModel challenge) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => AddChallengePage(
-          challenge: challenge,
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => AddChallengePage(challenge: challenge)),
+    );
+  }
+
+  void _goToStatisticsPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const StatisticsPage()),
     );
   }
 
@@ -88,9 +87,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
             ),
             FilledButton(
               onPressed: () => Navigator.pop(context, true),
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.error,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.error),
               child: const Text('Hapus'),
             ),
           ],
@@ -106,9 +103,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Challenge berhasil dihapus.'),
-        ),
+        const SnackBar(content: Text('Challenge berhasil dihapus.')),
       );
 
       Navigator.pop(context);
@@ -219,17 +214,13 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: LoadingWidget(
-              message: 'Memuat detail challenge...',
-            ),
+            body: LoadingWidget(message: 'Memuat detail challenge...'),
           );
         }
 
         if (snapshot.hasError) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Detail Challenge'),
-            ),
+            appBar: AppBar(title: const Text('Detail Challenge')),
             body: EmptyStateWidget(
               icon: Icons.error_outline_rounded,
               title: 'Gagal memuat challenge',
@@ -242,9 +233,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
 
         if (challenge == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Detail Challenge'),
-            ),
+            appBar: AppBar(title: const Text('Detail Challenge')),
             body: const EmptyStateWidget(
               icon: Icons.search_off_rounded,
               title: 'Challenge tidak ditemukan',
@@ -259,6 +248,11 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
           appBar: AppBar(
             title: const Text('Detail Challenge'),
             actions: [
+              IconButton(
+                onPressed: _goToStatisticsPage,
+                icon: const Icon(Icons.insert_chart_outlined_rounded),
+                tooltip: 'Statistik',
+              ),
               if (isOwner)
                 IconButton(
                   onPressed: () => _goToEditChallenge(challenge),
@@ -285,11 +279,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                     children: [
                       _buildHeader(context, challenge),
                       const SizedBox(height: 18),
-                      _buildProgressCard(
-                        context,
-                        challenge,
-                        myParticipant,
-                      ),
+                      _buildProgressCard(context, challenge, myParticipant),
                       const SizedBox(height: 18),
                       _buildInfoCard(context, challenge),
                       const SizedBox(height: 18),
@@ -298,6 +288,12 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                         challenge,
                         hasJoined,
                         myParticipant,
+                      ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: _goToStatisticsPage,
+                        icon: const Icon(Icons.insert_chart_outlined_rounded),
+                        label: const Text('Lihat Statistik Progress'),
                       ),
                       const SizedBox(height: 18),
                       _buildParticipantsSection(challenge),
@@ -319,10 +315,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            AppColors.secondary,
-            AppColors.primary,
-          ],
+          colors: [AppColors.secondary, AppColors.primary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -354,17 +347,17 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
           Text(
             challenge.title,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                ),
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             challenge.description,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  height: 1.5,
-                ),
+              color: Colors.white.withValues(alpha: 0.9),
+              height: 1.5,
+            ),
           ),
         ],
       ),
@@ -389,16 +382,13 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
           children: [
             Text(
               'Progress Saya',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 16),
             TweenAnimationBuilder<double>(
-              tween: Tween<double>(
-                begin: 0,
-                end: value,
-              ),
+              tween: Tween<double>(begin: 0, end: value),
               duration: const Duration(milliseconds: 800),
               curve: Curves.easeOutCubic,
               builder: (context, animatedValue, _) {
@@ -416,9 +406,9 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
             const SizedBox(height: 10),
             Text(
               '$progress / ${challenge.targetDuration} menit',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             if (participant?.status == 'completed') ...[
               const SizedBox(height: 8),
@@ -484,27 +474,23 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
   }) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: AppColors.primary,
-          size: 22,
-        ),
+        Icon(icon, color: AppColors.primary, size: 22),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),
         ),
         Flexible(
           child: Text(
             value,
             textAlign: TextAlign.right,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
         ),
       ],
@@ -553,9 +539,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
           return const Card(
             child: Padding(
               padding: EdgeInsets.all(18),
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: Center(child: CircularProgressIndicator()),
             ),
           );
         }
@@ -569,16 +553,16 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                 Text(
                   'Peserta Challenge',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 if (participants.isEmpty)
                   Text(
                     'Belum ada peserta.',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                      color: AppColors.textSecondary,
+                    ),
                   )
                 else
                   ...participants.asMap().entries.map((entry) {
@@ -588,8 +572,9 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(
-                        backgroundColor:
-                            AppColors.primary.withValues(alpha: 0.12),
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: 0.12,
+                        ),
                         child: Text(
                           '${index + 1}',
                           style: const TextStyle(

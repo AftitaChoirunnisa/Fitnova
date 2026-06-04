@@ -11,10 +11,7 @@ import 'add_activity_page.dart';
 class ActivityDetailPage extends StatefulWidget {
   final String activityId;
 
-  const ActivityDetailPage({
-    super.key,
-    required this.activityId,
-  });
+  const ActivityDetailPage({super.key, required this.activityId});
 
   @override
   State<ActivityDetailPage> createState() => _ActivityDetailPageState();
@@ -26,11 +23,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
   void _goToEditPage(ActivityModel activity) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (_) => AddActivityPage(
-          activity: activity,
-        ),
-      ),
+      MaterialPageRoute(builder: (_) => AddActivityPage(activity: activity)),
     );
   }
 
@@ -54,9 +47,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
               onPressed: () {
                 Navigator.pop(context, true);
               },
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.error,
-              ),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.error),
               child: const Text('Hapus'),
             ),
           ],
@@ -74,9 +65,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Aktivitas berhasil dihapus.'),
-        ),
+        const SnackBar(content: Text('Aktivitas berhasil dihapus.')),
       );
 
       Navigator.pop(context);
@@ -99,17 +88,13 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: LoadingWidget(
-              message: 'Memuat detail aktivitas...',
-            ),
+            body: LoadingWidget(message: 'Memuat detail aktivitas...'),
           );
         }
 
         if (snapshot.hasError) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Detail Aktivitas'),
-            ),
+            appBar: AppBar(title: const Text('Detail Aktivitas')),
             body: EmptyStateWidget(
               icon: Icons.error_outline_rounded,
               title: 'Gagal memuat detail',
@@ -122,9 +107,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
 
         if (activity == null) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Detail Aktivitas'),
-            ),
+            appBar: AppBar(title: const Text('Detail Aktivitas')),
             body: const EmptyStateWidget(
               icon: Icons.search_off_rounded,
               title: 'Aktivitas tidak ditemukan',
@@ -174,10 +157,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
     );
   }
 
-  Widget _buildHeroHeader(
-    BuildContext context,
-    ActivityModel activity,
-  ) {
+  Widget _buildHeroHeader(BuildContext context, ActivityModel activity) {
     final sportColor = _getSportColor(activity.sportType);
 
     return Container(
@@ -185,10 +165,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            sportColor,
-            AppColors.secondary,
-          ],
+          colors: [sportColor, AppColors.secondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -227,27 +204,24 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
             activity.sportType,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w800,
-                ),
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             DateFormatter.formatDate(activity.activityDate),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  fontWeight: FontWeight.w500,
-                ),
+              color: Colors.white.withValues(alpha: 0.9),
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildMainInfoCard(
-    BuildContext context,
-    ActivityModel activity,
-  ) {
+  Widget _buildMainInfoCard(BuildContext context, ActivityModel activity) {
     return Row(
       children: [
         Expanded(
@@ -295,32 +269,28 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                 color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 26,
-              ),
+              child: Icon(icon, color: color, size: 26),
             ),
             const SizedBox(height: 14),
             Text(
               value,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 2),
             Text(
               unit,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 8),
             Text(
               title,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -328,10 +298,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
     );
   }
 
-  Widget _buildNoteCard(
-    BuildContext context,
-    ActivityModel activity,
-  ) {
+  Widget _buildNoteCard(BuildContext context, ActivityModel activity) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(18),
@@ -345,10 +312,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                 color: AppColors.accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(
-                Icons.notes_rounded,
-                color: AppColors.accent,
-              ),
+              child: const Icon(Icons.notes_rounded, color: AppColors.accent),
             ),
             const SizedBox(width: 14),
             Expanded(
@@ -358,16 +322,16 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                   Text(
                     'Catatan Aktivitas',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                        ),
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     activity.note.isEmpty ? '-' : activity.note,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                          height: 1.5,
-                        ),
+                      color: AppColors.textSecondary,
+                      height: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -378,10 +342,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
     );
   }
 
-  Widget _buildMetadataCard(
-    BuildContext context,
-    ActivityModel activity,
-  ) {
+  Widget _buildMetadataCard(BuildContext context, ActivityModel activity) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(18),
@@ -421,37 +382,30 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
   }) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: AppColors.primary,
-          size: 22,
-        ),
+        Icon(icon, color: AppColors.primary, size: 22),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),
         ),
         Flexible(
           child: Text(
             value,
             textAlign: TextAlign.right,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildActionButtons(
-    BuildContext context,
-    ActivityModel activity,
-  ) {
+  Widget _buildActionButtons(BuildContext context, ActivityModel activity) {
     return Column(
       children: [
         ElevatedButton.icon(
@@ -464,9 +418,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
           onPressed: () => _deleteActivity(activity),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.error,
-            side: const BorderSide(
-              color: AppColors.error,
-            ),
+            side: const BorderSide(color: AppColors.error),
             minimumSize: const Size(double.infinity, 52),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),

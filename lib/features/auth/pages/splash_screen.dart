@@ -16,10 +16,7 @@ class SplashScreen extends StatelessWidget {
           duration: const Duration(milliseconds: 700),
           curve: Curves.easeOutBack,
           builder: (context, value, child) {
-            return Transform.scale(
-              scale: value,
-              child: child,
-            );
+            return Transform.scale(scale: value, child: child);
           },
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -41,17 +38,17 @@ class SplashScreen extends StatelessWidget {
               Text(
                 AppStrings.appName,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 AppStrings.appTagline,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
               ),
             ],
           ),

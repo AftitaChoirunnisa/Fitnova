@@ -47,15 +47,13 @@ class _RegisterPageState extends State<RegisterPage>
       curve: Curves.easeOut,
     );
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.04),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOutCubic,
-      ),
-    );
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.04), end: Offset.zero).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOutCubic,
+          ),
+        );
 
     _animationController.forward();
   }
@@ -132,9 +130,7 @@ class _RegisterPageState extends State<RegisterPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Buat Akun'),
-      ),
+      appBar: AppBar(title: const Text('Buat Akun')),
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -166,16 +162,16 @@ class _RegisterPageState extends State<RegisterPage>
         Text(
           'Mulai perjalanan fitness kamu',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: AppColors.textPrimary,
-              ),
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
         ),
         const SizedBox(height: 8),
         Text(
           'Buat akun untuk mencatat aktivitas, mengikuti challenge, dan melihat progress olahraga.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
         ),
       ],
     );
@@ -265,9 +261,9 @@ class _RegisterPageState extends State<RegisterPage>
       children: [
         Text(
           'Sudah punya akun?',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
         ),
         TextButton(
           onPressed: _isLoading ? null : _backToLogin,

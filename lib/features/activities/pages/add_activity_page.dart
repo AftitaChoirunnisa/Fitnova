@@ -11,10 +11,7 @@ import '../services/activity_service.dart';
 class AddActivityPage extends StatefulWidget {
   final ActivityModel? activity;
 
-  const AddActivityPage({
-    super.key,
-    this.activity,
-  });
+  const AddActivityPage({super.key, this.activity});
 
   @override
   State<AddActivityPage> createState() => _AddActivityPageState();
@@ -186,9 +183,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
     final title = _isEditMode ? 'Edit Aktivitas' : 'Tambah Aktivitas';
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -210,10 +205,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            AppColors.primary,
-            AppColors.secondary,
-          ],
+          colors: [AppColors.primary, AppColors.secondary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -241,10 +233,10 @@ class _AddActivityPageState extends State<AddActivityPage> {
                   ? 'Perbarui data aktivitas olahraga kamu.'
                   : 'Catat olahraga hari ini agar progress kamu lebih terpantau.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.white,
-                    height: 1.5,
-                    fontWeight: FontWeight.w500,
-                  ),
+                color: Colors.white,
+                height: 1.5,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ],
