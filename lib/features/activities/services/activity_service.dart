@@ -146,7 +146,10 @@ class ActivityService {
       'uid': uid,
       'email': userData?['email'] ?? _auth.currentUser?.email ?? '',
       'name':
-          userData?['name'] ?? _auth.currentUser?.displayName ?? _auth.currentUser?.email ?? '',
+          userData?['name'] ??
+          _auth.currentUser?.displayName ??
+          _auth.currentUser?.email ??
+          '',
       'photoUrl': userData?['photoUrl'] ?? _auth.currentUser?.photoURL,
       'totalActivities': totalActivities,
       'totalDuration': totalDuration,

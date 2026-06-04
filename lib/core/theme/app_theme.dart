@@ -1,111 +1,117 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../constants/app_colors.dart';
+import 'app_colors.dart';
+import 'app_text_styles.dart';
 
 class AppTheme {
   AppTheme._();
 
   static ThemeData get lightTheme {
-    final baseTextTheme = GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme)
-        .apply(bodyColor: AppColors.textWhite, displayColor: AppColors.textWhite);
+    final baseTextTheme =
+        GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme).apply(
+          bodyColor: AppColors.textPrimary,
+          displayColor: AppColors.textPrimary,
+        );
+
     final ColorScheme colorScheme = const ColorScheme.dark(
-      primary: AppColors.neonGreen,
-      secondary: AppColors.softGreen,
-      surface: AppColors.cardDark,
-      error: AppColors.error,
-      onPrimary: AppColors.primaryDark,
-      onSecondary: AppColors.primaryDark,
-      onSurface: AppColors.textWhite,
-      onError: AppColors.textWhite,
+      primary: AppColors.primaryGreen,
+      secondary: AppColors.mediumGreen,
+      surface: AppColors.softCard,
+      error: AppColors.danger,
+      onPrimary: AppColors.darkGreen,
+      onSecondary: AppColors.darkGreen,
+      onSurface: AppColors.textPrimary,
+      onError: AppColors.textPrimary,
     );
 
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: AppColors.deepBackground,
       textTheme: baseTextTheme,
-      iconTheme: const IconThemeData(color: AppColors.softGreen),
+      iconTheme: const IconThemeData(color: AppColors.primaryGreen),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.primaryDark,
+        backgroundColor: AppColors.deepBackground,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.poppins(
-          color: AppColors.textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-        ),
+        titleTextStyle: AppTextStyles.headingMedium,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
       cardTheme: CardThemeData(
-        color: AppColors.surface,
+        color: AppColors.softCard,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: AppColors.borderSoft),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.secondaryDark,
-        labelStyle: const TextStyle(color: AppColors.textGray),
-        hintStyle: const TextStyle(color: AppColors.textGray),
-        prefixIconColor: AppColors.softGreen,
+        fillColor: AppColors.darkGreen,
+        labelStyle: TextStyle(color: AppColors.textSecondary),
+        hintStyle: TextStyle(color: AppColors.textMuted),
+        prefixIconColor: AppColors.textSecondary,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 14,
+          vertical: 16,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: const BorderSide(color: AppColors.borderSoft),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: const BorderSide(color: AppColors.borderSoft),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderSide: const BorderSide(
+            color: AppColors.primaryGreen,
+            width: 1.5,
+          ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.error),
+          borderSide: const BorderSide(color: AppColors.danger),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.neonGreen,
-          foregroundColor: AppColors.primaryDark,
+          backgroundColor: AppColors.primaryGreen,
+          foregroundColor: AppColors.darkGreen,
           elevation: 0,
-          minimumSize: const Size(double.infinity, 52),
+          minimumSize: const Size(double.infinity, 54),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
           ),
           textStyle: GoogleFonts.poppins(
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(foregroundColor: AppColors.neonGreen),
+        style: TextButton.styleFrom(foregroundColor: AppColors.primaryGreen),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.neonGreen,
-          side: const BorderSide(color: AppColors.borderGreen),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          foregroundColor: AppColors.softMint,
+          side: const BorderSide(color: AppColors.borderSoft),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: AppColors.secondaryDark,
-        indicatorColor: AppColors.neonGreen.withValues(alpha: 0.16),
+        backgroundColor: AppColors.darkGreen,
+        indicatorColor: AppColors.primaryGreen.withValues(alpha: 0.16),
         labelTextStyle: WidgetStateProperty.resolveWith(
           (states) => TextStyle(
             color: states.contains(WidgetState.selected)
-                ? AppColors.neonGreen
-                : AppColors.textGray,
+                ? AppColors.primaryGreen
+                : AppColors.textMuted,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
@@ -113,20 +119,20 @@ class AppTheme {
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
             color: states.contains(WidgetState.selected)
-                ? AppColors.neonGreen
-                : AppColors.textGray,
+                ? AppColors.primaryGreen
+                : AppColors.textMuted,
           ),
         ),
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: AppColors.cardDark,
+        backgroundColor: AppColors.softCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: AppColors.cardDark,
-        contentTextStyle: const TextStyle(color: AppColors.textWhite),
+        backgroundColor: AppColors.softCard,
+        contentTextStyle: TextStyle(color: AppColors.textPrimary),
         behavior: SnackBarBehavior.floating,
-        actionTextColor: AppColors.neonGreen,
+        actionTextColor: AppColors.primaryGreen,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
     );

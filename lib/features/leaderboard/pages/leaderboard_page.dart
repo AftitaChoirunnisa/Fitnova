@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/soft_card.dart';
+import '../../../core/widgets/soft_gradient_card.dart';
 import '../../../core/widgets/empty_state_widget.dart';
 import '../../../core/widgets/loading_widget.dart';
 import '../../../models/user_model.dart';
@@ -18,105 +22,117 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<AppUser>>(
-      stream: _leaderboardService.getLeaderboard(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const LoadingWidget(message: 'Memuat leaderboard...');
-        }
+    return AppScaffold(
+      appBarTitle: 'Leaderboard',
+      body: StreamBuilder<List<AppUser>>(
+        stream: _leaderboardService.getLeaderboard(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingWidget(message: 'Memuat leaderboard...');
+          }
 
-        if (snapshot.hasError) {
-          return EmptyStateWidget(
-            icon: Icons.error_outline_rounded,
-            title: 'Gagal memuat leaderboard',
-            message:
-                'Data ranking belum bisa dimuat. Pastikan koneksi dan index Firestore tersedia.',
-            buttonText: 'Coba Lagi',
-            onPressed: () => setState(() {}),
-          );
-        }
+          if (snapshot.hasError) {
+            return EmptyStateWidget(
+              icon: Icons.error_outline_rounded,
+              title: 'Gagal memuat leaderboard',
+              message:
+                  'Data ranking belum bisa dimuat. Pastikan koneksi internet tersedia.',
+              buttonText: 'Coba Lagi',
+              onPressed: () => setState(() {}),
+            );
+          }
 
-        final users = snapshot.data ?? [];
+          final users = snapshot.data ?? [];
 
-        if (users.isEmpty) {
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _buildHeaderCard(context, 0),
-              const SizedBox(height: 16),
-              const EmptyStateWidget(
-                icon: Icons.emoji_events_outlined,
-                title: 'Belum ada ranking',
-                message:
-                    'Leaderboard akan muncul setelah pengguna mulai mencatat aktivitas olahraga.',
+          if (users.isEmpty) {
+            return Column(
+              children: [
+                _buildHeader(0),
+                const SizedBox(height: 16),
+                const Expanded(
+                  child: EmptyStateWidget(
+                    icon: Icons.emoji_events_outlined,
+                    title: 'Belum ada ranking',
+                    message:
+                        'Leaderboard akan muncul setelah pengguna mulai mencatat aktivitas olahraga.',
+                  ),
+                ),
+              ],
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async => setState(() {}),
+            color: AppColors.primaryGreen,
+            backgroundColor: AppColors.softCard,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeader(users.length),
+                  const SizedBox(height: 24),
+                  if (users.isNotEmpty) ...[
+                    _buildPodium(users.take(3).toList()),
+                    const SizedBox(height: 28),
+                  ],
+                  _buildRankingList(users),
+                  const SizedBox(height: 32),
+                ],
               ),
-            ],
+            ),
           );
-        }
-
-        return RefreshIndicator(
-          onRefresh: () async => setState(() {}),
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _buildHeaderCard(context, users.length),
-              const SizedBox(height: 16),
-              _buildTopUsers(context, users.take(3).toList()),
-              const SizedBox(height: 16),
-              _buildRankingList(context, users),
-              const SizedBox(height: 24),
-            ],
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 
-  Widget _buildHeaderCard(BuildContext context, int totalUsers) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.secondary, AppColors.primary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(26),
-      ),
+  Widget _buildHeader(int totalUsers) {
+    return SoftGradientCard(
       child: Stack(
         children: [
           Positioned(
-            right: -10,
-            bottom: -10,
-            child: Icon(
-              Icons.emoji_events_rounded,
-              size: 116,
-              color: Colors.white.withValues(alpha: 0.12),
+            right: -20,
+            bottom: -20,
+            child: Opacity(
+              opacity: 0.1,
+              child: Icon(
+                Icons.emoji_events_rounded,
+                size: 130,
+                color: Colors.white,
+              ),
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.leaderboard_rounded,
-                color: Colors.white,
-                size: 38,
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Leaderboard FitNova',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.leaderboard_rounded,
                   color: Colors.white,
-                  fontWeight: FontWeight.w800,
+                  size: 24,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 18),
               Text(
-                '$totalUsers pengguna aktif masuk ranking berdasarkan total durasi olahraga.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.white.withValues(alpha: 0.9),
-                  height: 1.5,
+                'Leaderboard',
+                style: AppTextStyles.titleLarge.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '$totalUsers active users ranked by their total workout duration this week.',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: Colors.white.withOpacity(0.85),
+                  height: 1.4,
                 ),
               ),
             ],
@@ -126,278 +142,301 @@ class _LeaderboardPageState extends State<LeaderboardPage> {
     );
   }
 
-  Widget _buildTopUsers(BuildContext context, List<AppUser> users) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(14, 18, 14, 18),
-        child: Column(
-          children: [
-            Text(
-              'Top 3 FitNova',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 18),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: users.asMap().entries.map((entry) {
-                final rank = entry.key + 1;
-                final user = entry.value;
+  Widget _buildPodium(List<AppUser> topUsers) {
+    // Reorder for podium display: [2nd, 1st, 3rd]
+    List<Widget> podiumWidgets = [];
 
-                return Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: rank == 1 ? 0 : 4,
-                      right: rank == users.length ? 0 : 4,
-                    ),
-                    child: _buildTopUserItem(context, user, rank),
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
+    if (topUsers.length > 1) {
+      podiumWidgets.add(
+        Expanded(
+          child: _buildPodiumSlot(topUsers[1], 2, 55, AppColors.borderSoft),
         ),
-      ),
-    );
-  }
+      );
+    } else {
+      podiumWidgets.add(const Expanded(child: SizedBox()));
+    }
 
-  Widget _buildTopUserItem(BuildContext context, AppUser user, int rank) {
-    final color = _getRankColor(rank);
+    if (topUsers.isNotEmpty) {
+      podiumWidgets.add(
+        Expanded(
+          child: _buildPodiumSlot(topUsers[0], 1, 80, AppColors.warning),
+        ),
+      );
+    }
 
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
-      ),
+    if (topUsers.length > 2) {
+      podiumWidgets.add(
+        Expanded(
+          child: _buildPodiumSlot(topUsers[2], 3, 40, Colors.brown.shade400),
+        ),
+      );
+    } else {
+      podiumWidgets.add(const Expanded(child: SizedBox()));
+    }
+
+    return SoftCard(
       child: Column(
         children: [
-          Stack(
-            clipBehavior: Clip.none,
+          Text(
+            'Top Performers',
+            style: AppTextStyles.titleMedium.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: podiumWidgets,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPodiumSlot(
+    AppUser user,
+    int rank,
+    double blockHeight,
+    Color accentColor,
+  ) {
+    final photoUrl = user.photoUrl;
+    final isFirst = rank == 1;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.topCenter,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: accentColor,
+                  width: isFirst ? 2.5 : 1.5,
+                ),
+                boxShadow: isFirst
+                    ? [
+                        BoxShadow(
+                          color: accentColor.withOpacity(0.2),
+                          blurRadius: 12,
+                          spreadRadius: 2,
+                        ),
+                      ]
+                    : null,
+              ),
+              child: CircleAvatar(
+                radius: isFirst ? 32 : 26,
+                backgroundColor: AppColors.darkGreen,
+                backgroundImage: photoUrl != null && photoUrl.isNotEmpty
+                    ? NetworkImage(photoUrl)
+                    : null,
+                child: photoUrl == null || photoUrl.isEmpty
+                    ? Text(
+                        _getInitial(user.name),
+                        style: TextStyle(
+                          color: accentColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: isFirst ? 20 : 16,
+                        ),
+                      )
+                    : null,
+              ),
+            ),
+            if (isFirst)
+              const Positioned(
+                top: -18,
+                child: Icon(
+                  Icons.workspace_premium_rounded,
+                  color: AppColors.warning,
+                  size: 22,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text(
+          user.name.isNotEmpty ? user.name : 'FitNova User',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.titleMedium.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: isFirst ? 14 : 12,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          '${user.totalDuration} mins',
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.primaryGreen,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          height: blockHeight,
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                accentColor.withOpacity(0.25),
+                accentColor.withOpacity(0.08),
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            ),
+            border: Border(
+              top: BorderSide(color: accentColor, width: 2),
+              left: BorderSide(color: AppColors.borderSoft),
+              right: BorderSide(color: AppColors.borderSoft),
+            ),
+          ),
+          child: Center(
+            child: Text(
+              '#$rank',
+              style: AppTextStyles.headingMedium.copyWith(
+                color: accentColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRankingList(List<AppUser> users) {
+    // Filter users ranked 4th and below
+    final rankList = users.asMap().entries.toList();
+
+    return SoftCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              _buildAvatar(user, radius: rank == 1 ? 31 : 27),
-              Positioned(
-                right: -4,
-                bottom: -4,
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    _getRankIcon(rank),
-                    size: 17,
-                    color: Colors.white,
-                  ),
+              const Icon(
+                Icons.format_list_numbered_rounded,
+                color: AppColors.primaryGreen,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Rankings',
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Text(
-            _displayName(user),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${user.totalDuration} menit',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${user.totalActivities} aktivitas',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRankingList(BuildContext context, List<AppUser> users) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  Icons.format_list_numbered_rounded,
-                  color: AppColors.primary,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Ranking Pengguna',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            ...users.asMap().entries.map((entry) {
-              final index = entry.key;
+          const SizedBox(height: 18),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: rankList.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final entry = rankList[index];
+              final userIndex = entry.key;
               final user = entry.value;
-              final rank = index + 1;
+              final rank = userIndex + 1;
 
-              return Column(
+              final photoUrl = user.photoUrl;
+
+              return Row(
                 children: [
-                  _buildRankingTile(context, user, rank),
-                  if (index != users.length - 1) const Divider(height: 18),
-                ],
-              );
-            }),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRankingTile(BuildContext context, AppUser user, int rank) {
-    final badgeColor = _getRankColor(rank);
-
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-      leading: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            width: 34,
-            child: Center(
-              child: rank <= 3
-                  ? Icon(_getRankIcon(rank), color: badgeColor)
-                  : Text(
-                      '#$rank',
-                      style: TextStyle(
-                        color: badgeColor,
-                        fontWeight: FontWeight.w900,
+                  SizedBox(
+                    width: 32,
+                    child: Center(
+                      child: Text(
+                        '#$rank',
+                        style: AppTextStyles.titleMedium.copyWith(
+                          color: rank <= 3
+                              ? (rank == 1
+                                    ? AppColors.warning
+                                    : (rank == 2
+                                          ? AppColors.textSecondary
+                                          : Colors.brown.shade300))
+                              : AppColors.textMuted,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-            ),
-          ),
-          _buildAvatar(user, radius: 21),
-        ],
-      ),
-      title: Text(
-        _displayName(user),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: Theme.of(
-          context,
-        ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w800),
-      ),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 4),
-        child: Text(
-          '${user.email} | ${user.totalActivities} aktivitas | ${user.totalCalories} kkal',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: Theme.of(
-            context,
-          ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
-        ),
-      ),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            '${user.totalDuration}',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w900,
-              color: AppColors.primary,
-            ),
-          ),
-          Text(
-            'menit',
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(width: 12),
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: AppColors.primaryGreen.withOpacity(0.1),
+                    backgroundImage: photoUrl != null && photoUrl.isNotEmpty
+                        ? NetworkImage(photoUrl)
+                        : null,
+                    child: photoUrl == null || photoUrl.isEmpty
+                        ? Text(
+                            _getInitial(user.name),
+                            style: TextStyle(
+                              color: AppColors.primaryGreen,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : null,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user.name.isNotEmpty ? user.name : 'FitNova User',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${user.totalActivities} activities • ${user.totalCalories} kcal',
+                          style: AppTextStyles.bodySmall.copyWith(
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '${user.totalDuration}',
+                        style: AppTextStyles.titleMedium.copyWith(
+                          color: AppColors.primaryGreen,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'mins',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.textMuted,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildAvatar(AppUser user, {required double radius}) {
-    final photoUrl = user.photoUrl;
-
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-      backgroundImage: photoUrl == null || photoUrl.isEmpty
-          ? null
-          : NetworkImage(photoUrl),
-      child: photoUrl == null || photoUrl.isEmpty
-          ? Text(
-              _getInitial(_displayName(user)),
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w800,
-              ),
-            )
-          : null,
-    );
-  }
-
-  String _displayName(AppUser user) {
-    if (user.name.trim().isNotEmpty) {
-      return user.name.trim();
-    }
-    if (user.email.trim().isNotEmpty) {
-      return user.email.trim();
-    }
-    return 'FitNova User';
-  }
-
-  String _getInitial(String value) {
-    if (value.trim().isEmpty) {
-      return 'U';
-    }
-
-    return value.trim()[0].toUpperCase();
-  }
-
-  IconData _getRankIcon(int rank) {
-    switch (rank) {
-      case 1:
-        return Icons.workspace_premium_rounded;
-      case 2:
-        return Icons.military_tech_rounded;
-      case 3:
-        return Icons.emoji_events_rounded;
-      default:
-        return Icons.person_rounded;
-    }
-  }
-
-  Color _getRankColor(int rank) {
-    switch (rank) {
-      case 1:
-        return AppColors.warning;
-      case 2:
-        return Colors.blueGrey;
-      case 3:
-        return Colors.brown;
-      default:
-        return AppColors.primary;
-    }
+  String _getInitial(String name) {
+    if (name.trim().isEmpty) return 'U';
+    return name.trim()[0].toUpperCase();
   }
 }

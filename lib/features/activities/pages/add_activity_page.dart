@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../core/utils/validators.dart';
-import '../../../core/widgets/custom_button.dart';
-import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/primary_button.dart';
+import '../../../core/widgets/soft_card.dart';
+import '../../../core/widgets/soft_gradient_card.dart';
 import '../../../models/activity_model.dart';
 import '../services/activity_service.dart';
 
@@ -19,24 +23,44 @@ class AddActivityPage extends StatefulWidget {
 
 class _AddActivityPageState extends State<AddActivityPage> {
   final ActivityService _activityService = ActivityService();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _durationController = TextEditingController();
   final TextEditingController _caloriesController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
-  final List<String> _sportTypes = [
-    'Lari',
-    'Jalan Kaki',
-    'Bersepeda',
-    'Renang',
-    'Gym',
-    'Yoga',
-    'Futsal',
-    'Badminton',
-    'Basket',
-    'Workout Rumah',
+  final List<Map<String, dynamic>> _sportTypes = [
+    {'name': 'Lari', 'icon': Icons.directions_run_rounded, 'label': 'Running'},
+    {
+      'name': 'Jalan Kaki',
+      'icon': Icons.directions_walk_rounded,
+      'label': 'Walking',
+    },
+    {
+      'name': 'Bersepeda',
+      'icon': Icons.directions_bike_rounded,
+      'label': 'Cycling',
+    },
+    {'name': 'Renang', 'icon': Icons.pool_rounded, 'label': 'Swimming'},
+    {'name': 'Gym', 'icon': Icons.fitness_center_rounded, 'label': 'Gym'},
+    {'name': 'Yoga', 'icon': Icons.self_improvement_rounded, 'label': 'Yoga'},
+    {'name': 'Futsal', 'icon': Icons.sports_soccer_rounded, 'label': 'Futsal'},
+    {
+      'name': 'Badminton',
+      'icon': Icons.sports_tennis_rounded,
+      'label': 'Badminton',
+    },
+    {
+      'name': 'Basket',
+      'icon': Icons.sports_basketball_rounded,
+      'label': 'Basket',
+    },
+    {
+      'name': 'Workout Rumah',
+      'icon': Icons.home_work_rounded,
+      'label': 'Home Workout',
+    },
   ];
 
   String? _selectedSportType;
@@ -50,7 +74,6 @@ class _AddActivityPageState extends State<AddActivityPage> {
     super.initState();
 
     final activity = widget.activity;
-
     if (activity != null) {
       _selectedSportType = activity.sportType;
       _durationController.text = activity.duration.toString();
@@ -58,6 +81,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
       _noteController.text = activity.note;
       _selectedDate = activity.activityDate;
     }
+    _dateController.text = DateFormatter.formatDate(_selectedDate);
   }
 
   @override
@@ -65,6 +89,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
     _durationController.dispose();
     _caloriesController.dispose();
     _noteController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 
@@ -74,6 +99,20 @@ class _AddActivityPageState extends State<AddActivityPage> {
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.primaryGreen,
+              onPrimary: AppColors.darkGreen,
+              surface: AppColors.softCard,
+              onSurface: AppColors.textPrimary,
+            ),
+            dialogBackgroundColor: AppColors.softCard,
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (pickedDate == null) {
@@ -82,6 +121,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
 
     setState(() {
       _selectedDate = pickedDate;
+      _dateController.text = DateFormatter.formatDate(pickedDate);
     });
   }
 
@@ -94,7 +134,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Pilih jenis olahraga terlebih dahulu.'),
-          backgroundColor: AppColors.error,
+          backgroundColor: AppColors.danger,
         ),
       );
       return;
@@ -150,7 +190,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: AppColors.error,
+          backgroundColor: AppColors.danger,
         ),
       );
     } finally {
@@ -180,62 +220,57 @@ class _AddActivityPageState extends State<AddActivityPage> {
 
   @override
   Widget build(BuildContext context) {
-    final title = _isEditMode ? 'Edit Aktivitas' : 'Tambah Aktivitas';
+    final title = _isEditMode ? 'Edit Activity' : 'Add Activity';
 
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              _buildHeaderCard(context),
-              const SizedBox(height: 18),
-              _buildForm(),
-            ],
-          ),
+    return AppScaffold(
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back_ios_rounded,
+          color: AppColors.textPrimary,
+        ),
+        onPressed: () => Navigator.pop(context),
+      ),
+      appBarTitle: title,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeaderCard(),
+            const SizedBox(height: 24),
+            _buildForm(),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildHeaderCard(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.secondary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(24),
-      ),
+  Widget _buildHeaderCard() {
+    return SoftGradientCard(
       child: Row(
         children: [
           Container(
-            width: 54,
-            height: 54,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.18),
-              borderRadius: BorderRadius.circular(18),
+              color: Colors.white.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: const Icon(
               Icons.fitness_center_rounded,
               color: Colors.white,
-              size: 30,
+              size: 24,
             ),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Text(
               _isEditMode
-                  ? 'Perbarui data aktivitas olahraga kamu.'
-                  : 'Catat olahraga hari ini agar progress kamu lebih terpantau.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white,
-                height: 1.5,
-                fontWeight: FontWeight.w500,
+                  ? 'Update your activity logs to keep your streaks alive.'
+                  : 'Log your workouts today to track your steps toward fitness goals.',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+                height: 1.4,
               ),
             ),
           ),
@@ -245,96 +280,114 @@ class _AddActivityPageState extends State<AddActivityPage> {
   }
 
   Widget _buildForm() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              DropdownButtonFormField<String>(
-                initialValue: _selectedSportType,
-                decoration: const InputDecoration(
-                  labelText: 'Jenis Olahraga',
-                  prefixIcon: Icon(Icons.sports_gymnastics_rounded),
-                ),
-                items: _sportTypes.map((sport) {
-                  return DropdownMenuItem<String>(
-                    value: sport,
-                    child: Text(sport),
-                  );
-                }).toList(),
-                onChanged: _isLoading
-                    ? null
-                    : (value) {
-                        setState(() {
-                          _selectedSportType = value;
-                        });
-                      },
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Jenis olahraga wajib dipilih';
-                  }
-
-                  return null;
-                },
+    return SoftCard(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Select Sport Type',
+              style: AppTextStyles.titleMedium.copyWith(
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _durationController,
-                label: 'Durasi Olahraga',
-                hint: 'Contoh: 30',
-                prefixIcon: Icons.timer_outlined,
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  return _validatePositiveNumber(value, 'Durasi');
-                },
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _caloriesController,
-                label: 'Kalori Terbakar',
-                hint: 'Contoh: 150',
-                prefixIcon: Icons.local_fire_department_outlined,
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  return _validatePositiveNumber(value, 'Kalori');
-                },
-              ),
-              const SizedBox(height: 16),
-              InkWell(
-                onTap: _isLoading ? null : _selectActivityDate,
-                borderRadius: BorderRadius.circular(16),
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Tanggal Aktivitas',
-                    prefixIcon: Icon(Icons.calendar_today_outlined),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _sportTypes.map((sport) {
+                final isSelected = _selectedSportType == sport['name'];
+                return ChoiceChip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        sport['icon'] as IconData,
+                        size: 16,
+                        color: isSelected
+                            ? AppColors.darkGreen
+                            : AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(sport['label'] as String),
+                    ],
                   ),
-                  child: Text(
-                    DateFormatter.formatDate(_selectedDate),
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  selected: isSelected,
+                  onSelected: _isLoading
+                      ? null
+                      : (selected) {
+                          setState(() {
+                            _selectedSportType = selected
+                                ? (sport['name'] as String)
+                                : null;
+                          });
+                        },
+                  backgroundColor: AppColors.darkGreen,
+                  selectedColor: AppColors.primaryGreen,
+                  labelStyle: AppTextStyles.bodyMedium.copyWith(
+                    fontSize: 12,
+                    color: isSelected
+                        ? AppColors.darkGreen
+                        : AppColors.textSecondary,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              CustomTextField(
-                controller: _noteController,
-                label: 'Catatan',
-                hint: 'Contoh: Lari pagi di taman',
-                prefixIcon: Icons.notes_rounded,
-                maxLines: 3,
-                validator: (value) {
-                  return Validators.required(value, 'Catatan');
-                },
-              ),
-              const SizedBox(height: 24),
-              CustomButton(
-                text: _isEditMode ? 'Simpan Perubahan' : 'Tambah Aktivitas',
-                isLoading: _isLoading,
-                onPressed: _saveActivity,
-              ),
-            ],
-          ),
+                  side: BorderSide(
+                    color: isSelected
+                        ? AppColors.primaryGreen
+                        : AppColors.borderSoft,
+                    width: 1.0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  showCheckmark: false,
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+            AppTextField(
+              controller: _durationController,
+              label: 'Duration (minutes)',
+              hint: 'e.g. 30',
+              prefixIcon: Icons.timer_outlined,
+              keyboardType: TextInputType.number,
+              validator: (value) => _validatePositiveNumber(value, 'Duration'),
+            ),
+            const SizedBox(height: 18),
+            AppTextField(
+              controller: _caloriesController,
+              label: 'Calories Burned (kcal)',
+              hint: 'e.g. 150',
+              prefixIcon: Icons.local_fire_department_outlined,
+              keyboardType: TextInputType.number,
+              validator: (value) => _validatePositiveNumber(value, 'Calories'),
+            ),
+            const SizedBox(height: 18),
+            AppTextField(
+              controller: _dateController,
+              label: 'Activity Date',
+              hint: 'Select Date',
+              prefixIcon: Icons.calendar_today_outlined,
+              readOnly: true,
+              onTap: _isLoading ? null : _selectActivityDate,
+            ),
+            const SizedBox(height: 18),
+            AppTextField(
+              controller: _noteController,
+              label: 'Notes',
+              hint: 'e.g. Morning run around the park',
+              prefixIcon: Icons.notes_rounded,
+              maxLines: 3,
+              validator: (value) => Validators.required(value, 'Notes'),
+            ),
+            const SizedBox(height: 28),
+            PrimaryButton(
+              text: _isEditMode ? 'Save Changes' : 'Save Activity',
+              isLoading: _isLoading,
+              onPressed: _saveActivity,
+            ),
+          ],
         ),
       ),
     );

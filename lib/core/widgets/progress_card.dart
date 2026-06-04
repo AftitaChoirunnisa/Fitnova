@@ -31,8 +31,8 @@ class ProgressCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ],
@@ -48,9 +48,9 @@ class ProgressCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             subtitle,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textGray,
-                ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: AppColors.textGray),
           ),
         ],
       ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_strings.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/validators.dart';
-import '../../../core/widgets/custom_button.dart';
-import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/primary_button.dart';
+import '../../../core/widgets/soft_card.dart';
 import '../../../services/firebase_auth_service.dart';
 import 'register_page.dart';
 
@@ -18,7 +20,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   final FirebaseAuthService _authService = FirebaseAuthService();
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController = TextEditingController();
@@ -88,7 +89,7 @@ class _LoginPageState extends State<LoginPage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: AppColors.error,
+          backgroundColor: AppColors.danger,
         ),
       );
     } finally {
@@ -109,33 +110,23 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return AppScaffold(
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: ScaleTransition(
           scale: _scaleAnimation,
-          child: SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight:
-                      MediaQuery.of(context).size.height -
-                      MediaQuery.of(context).padding.top -
-                      MediaQuery.of(context).padding.bottom -
-                      48,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildHeader(context),
-                    const SizedBox(height: 36),
-                    _buildLoginForm(),
-                    const SizedBox(height: 20),
-                    _buildRegisterLink(),
-                  ],
-                ),
-              ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
+                _buildHeader(),
+                const SizedBox(height: 40),
+                _buildFormCard(),
+                const SizedBox(height: 28),
+                _buildRegisterLink(),
+              ],
             ),
           ),
         ),
@@ -143,68 +134,64 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 86,
-          height: 86,
+          width: 64,
+          height: 64,
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [AppColors.primary, AppColors.secondary],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(28),
+            color: AppColors.softCard,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.borderSoft, width: 1.5),
           ),
           child: const Icon(
             Icons.fitness_center_rounded,
-            color: Colors.white,
-            size: 42,
+            color: AppColors.primaryGreen,
+            size: 32,
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 24),
         Text(
-          AppStrings.appName,
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
+          'Welcome Back',
+          style: AppTextStyles.headingLarge.copyWith(
+            fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Masuk dan lanjutkan progress olahragamu',
-          textAlign: TextAlign.center,
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          'Continue your fitness journey',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildLoginForm() {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: [
-          CustomTextField(
-            controller: _emailController,
-            label: 'Email',
-            hint: 'Masukkan email',
-            prefixIcon: Icons.email_outlined,
-            keyboardType: TextInputType.emailAddress,
-            validator: Validators.email,
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _passwordController,
-            obscureText: _obscurePassword,
-            validator: Validators.password,
-            decoration: InputDecoration(
-              labelText: 'Password',
-              hintText: 'Masukkan password',
-              prefixIcon: const Icon(Icons.lock_outline_rounded),
+  Widget _buildFormCard() {
+    return SoftCard(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            AppTextField(
+              controller: _emailController,
+              label: 'Email Address',
+              hint: 'Enter your email',
+              prefixIcon: Icons.email_outlined,
+              keyboardType: TextInputType.emailAddress,
+              validator: Validators.email,
+            ),
+            const SizedBox(height: 18),
+            AppTextField(
+              controller: _passwordController,
+              label: 'Password',
+              hint: 'Enter your password',
+              obscureText: _obscurePassword,
+              prefixIcon: Icons.lock_outline_rounded,
+              validator: Validators.password,
               suffixIcon: IconButton(
                 onPressed: () {
                   setState(() {
@@ -215,13 +202,19 @@ class _LoginPageState extends State<LoginPage>
                   _obscurePassword
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
+                  color: AppColors.textSecondary,
+                  size: 20,
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 24),
-          CustomButton(text: 'Login', isLoading: _isLoading, onPressed: _login),
-        ],
+            const SizedBox(height: 28),
+            PrimaryButton(
+              text: 'Sign In',
+              isLoading: _isLoading,
+              onPressed: _login,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -231,14 +224,20 @@ class _LoginPageState extends State<LoginPage>
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Belum punya akun?',
-          style: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          'Don\'t have an account?',
+          style: AppTextStyles.bodyMedium.copyWith(
+            color: AppColors.textSecondary,
+          ),
         ),
         TextButton(
           onPressed: _isLoading ? null : _goToRegisterPage,
-          child: const Text('Daftar'),
+          child: Text(
+            'Sign Up',
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.primaryGreen,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ],
     );

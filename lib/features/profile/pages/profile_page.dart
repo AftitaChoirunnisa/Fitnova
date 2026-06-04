@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
+import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/soft_card.dart';
+import '../../../core/widgets/soft_gradient_card.dart';
 import '../../../core/widgets/empty_state_widget.dart';
 import '../../../core/widgets/loading_widget.dart';
 import '../../../models/user_model.dart';
@@ -30,18 +33,31 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
+          backgroundColor: AppColors.softCard,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(22),
           ),
-          title: const Text('Logout'),
-          content: const Text('Apakah kamu yakin ingin keluar dari FitNova?'),
+          title: Text('Logout', style: AppTextStyles.headingSmall),
+          content: Text(
+            'Apakah kamu yakin ingin keluar dari FitNova?',
+            style: AppTextStyles.bodyMedium,
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Batal'),
+              child: Text(
+                'Batal',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.danger,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               onPressed: () => Navigator.pop(dialogContext, true),
               child: const Text('Logout'),
             ),
@@ -62,7 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: AppColors.error,
+          backgroundColor: AppColors.danger,
         ),
       );
     }
@@ -74,15 +90,17 @@ class _ProfilePageState extends State<ProfilePage> {
       applicationName: 'FitNova',
       applicationVersion: '1.0.0',
       applicationIcon: Container(
-        width: 46,
-        height: 46,
+        width: 48,
+        height: 48,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.primary, AppColors.secondary],
-          ),
+          color: AppColors.primaryGreen.withOpacity(0.12),
           borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.primaryGreen),
         ),
-        child: const Icon(Icons.fitness_center_rounded, color: Colors.white),
+        child: const Icon(
+          Icons.fitness_center_rounded,
+          color: AppColors.primaryGreen,
+        ),
       ),
       children: const [
         Text(
@@ -94,243 +112,231 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<AppUser?>(
-      stream: _profileService.getCurrentUserProfile(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const LoadingWidget(message: 'Memuat profil...');
-        }
+    return AppScaffold(
+      appBarTitle: 'Profile',
+      body: StreamBuilder<AppUser?>(
+        stream: _profileService.getCurrentUserProfile(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingWidget(message: 'Memuat profil...');
+          }
 
-        if (snapshot.hasError) {
-          return EmptyStateWidget(
-            icon: Icons.error_outline_rounded,
-            title: 'Gagal memuat profil',
-            message: snapshot.error.toString(),
-            buttonText: 'Coba Lagi',
-            onPressed: () => setState(() {}),
+          if (snapshot.hasError) {
+            return EmptyStateWidget(
+              icon: Icons.error_outline_rounded,
+              title: 'Gagal memuat profil',
+              message: snapshot.error.toString(),
+              buttonText: 'Coba Lagi',
+              onPressed: () => setState(() {}),
+            );
+          }
+
+          final user = snapshot.data;
+
+          if (user == null) {
+            return EmptyStateWidget(
+              icon: Icons.person_off_outlined,
+              title: 'Profil tidak ditemukan',
+              message: 'Data pengguna belum tersedia di database.',
+              buttonText: 'Muat Ulang',
+              onPressed: () => setState(() {}),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () async => setState(() {}),
+            color: AppColors.primaryGreen,
+            backgroundColor: AppColors.softCard,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Column(
+                children: [
+                  _buildProfileHeader(user),
+                  const SizedBox(height: 24),
+                  _buildStatisticGrid(user),
+                  const SizedBox(height: 16),
+                  _buildHighestStreakCard(user),
+                  const SizedBox(height: 20),
+                  _buildMenuSection(user),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
           );
-        }
-
-        final user = snapshot.data;
-
-        if (user == null) {
-          return EmptyStateWidget(
-            icon: Icons.person_off_outlined,
-            title: 'Profil tidak ditemukan',
-            message: 'Data pengguna belum tersedia di database.',
-            buttonText: 'Muat Ulang',
-            onPressed: () => setState(() {}),
-          );
-        }
-
-        return RefreshIndicator(
-          onRefresh: () async => setState(() {}),
-          child: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              _buildProfileHeader(context, user),
-              const SizedBox(height: 16),
-              _buildStatisticSection(context, user),
-              const SizedBox(height: 16),
-              _buildAccountSection(context, user),
-              const SizedBox(height: 16),
-              _buildMenuSection(context, user),
-              const SizedBox(height: 24),
-            ],
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, AppUser user) {
+  Widget _buildProfileHeader(AppUser user) {
     final displayName = _displayName(user);
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.secondary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(28),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.22),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
+    return SoftGradientCard(
       child: Column(
         children: [
-          _buildAvatar(user, radius: 44, foregroundColor: Colors.white),
-          const SizedBox(height: 14),
+          _buildAvatar(user, radius: 44),
+          const SizedBox(height: 16),
           Text(
             displayName,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            style: AppTextStyles.titleLarge.copyWith(
               color: Colors.white,
-              fontWeight: FontWeight.w900,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text(
             user.email,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.88),
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white.withOpacity(0.85),
             ),
           ),
           if (user.bio?.isNotEmpty == true) ...[
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
               user.bio!,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.9),
-                height: 1.45,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white.withOpacity(0.9),
+                height: 1.4,
               ),
             ),
           ],
-          const SizedBox(height: 18),
-          OutlinedButton.icon(
-            onPressed: () => _goToEditProfile(user),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.white,
-              side: BorderSide(color: Colors.white.withValues(alpha: 0.7)),
+          const SizedBox(height: 20),
+          GestureDetector(
+            onTap: () => _goToEditProfile(user),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.6),
+                  width: 1.5,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.edit_outlined,
+                    size: 14,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Edit Profile',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            icon: const Icon(Icons.edit_outlined),
-            label: const Text('Edit Profil'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildStatisticSection(BuildContext context, AppUser user) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildStatisticGrid(AppUser user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            'Activity Summary',
+            style: AppTextStyles.headingSmall.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1.35,
           children: [
-            _buildSectionTitle(
-              context,
-              icon: Icons.insert_chart_outlined_rounded,
-              title: 'Ringkasan Progress',
+            _buildStatCell(
+              icon: Icons.fitness_center_rounded,
+              title: 'Activities',
+              value: '${user.totalActivities}',
+              subtitle: 'workouts',
+              color: AppColors.primaryGreen,
             ),
-            const SizedBox(height: 16),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1.35,
-              children: [
-                _buildStatCard(
-                  context,
-                  icon: Icons.fitness_center_rounded,
-                  title: 'Aktivitas',
-                  value: '${user.totalActivities}',
-                  subtitle: 'total olahraga',
-                  color: AppColors.primary,
-                ),
-                _buildStatCard(
-                  context,
-                  icon: Icons.timer_outlined,
-                  title: 'Durasi',
-                  value: '${user.totalDuration}',
-                  subtitle: 'menit',
-                  color: AppColors.secondary,
-                ),
-                _buildStatCard(
-                  context,
-                  icon: Icons.local_fire_department_rounded,
-                  title: 'Kalori',
-                  value: '${user.totalCalories}',
-                  subtitle: 'kkal',
-                  color: AppColors.warning,
-                ),
-                _buildStatCard(
-                  context,
-                  icon: Icons.whatshot_rounded,
-                  title: 'Streak',
-                  value: '${user.currentStreak}',
-                  subtitle: 'hari saat ini',
-                  color: AppColors.accent,
-                ),
-              ],
+            _buildStatCell(
+              icon: Icons.timer_outlined,
+              title: 'Duration',
+              value: '${user.totalDuration}',
+              subtitle: 'mins',
+              color: AppColors.softMint,
             ),
-            const SizedBox(height: 12),
-            _buildInfoTile(
-              context,
-              icon: Icons.workspace_premium_outlined,
-              title: 'Highest Streak',
-              value: '${user.highestStreak} hari terbaik',
+            _buildStatCell(
+              icon: Icons.local_fire_department_rounded,
+              title: 'Calories',
+              value: '${user.totalCalories}',
+              subtitle: 'kcal',
+              color: AppColors.warning,
+            ),
+            _buildStatCell(
+              icon: Icons.whatshot_rounded,
+              title: 'Active Streak',
+              value: '${user.currentStreak}',
+              subtitle: 'days',
+              color: AppColors.danger,
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
-  Widget _buildStatCard(
-    BuildContext context, {
+  Widget _buildStatCell({
     required IconData icon,
     required String title,
     required String value,
     required String subtitle,
     required Color color,
   }) {
-    return Container(
+    return SoftCard(
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.16)),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color, size: 26),
+          Icon(icon, color: color, size: 24),
           const Spacer(),
           Text(
             title,
-            style: Theme.of(
-              context,
-            ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted),
           ),
           const SizedBox(height: 2),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
             children: [
               Flexible(
                 child: Text(
                   value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w900,
+                  style: AppTextStyles.titleLarge.copyWith(
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
               const SizedBox(width: 4),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
+              Text(
+                subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
                 ),
               ),
             ],
@@ -340,183 +346,149 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildAccountSection(BuildContext context, AppUser user) {
-    final dateText = user.createdAt == null
-        ? 'Belum tersedia'
-        : DateFormat('dd MMMM yyyy').format(user.createdAt!);
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildSectionTitle(
-              context,
-              icon: Icons.account_circle_outlined,
-              title: 'Informasi Akun',
+  Widget _buildHighestStreakCard(AppUser user) {
+    return SoftCard(
+      color: AppColors.cardSecondary,
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.warning.withOpacity(0.12),
+              shape: BoxShape.circle,
             ),
-            const SizedBox(height: 12),
-            _buildInfoTile(
-              context,
-              icon: Icons.person_outline_rounded,
-              title: 'Nama',
-              value: user.name.isEmpty ? 'Belum diisi' : user.name,
+            child: const Icon(
+              Icons.workspace_premium_outlined,
+              color: AppColors.warning,
+              size: 24,
             ),
-            const Divider(height: 22),
-            _buildInfoTile(
-              context,
-              icon: Icons.email_outlined,
-              title: 'Email',
-              value: user.email,
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Personal Best',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textMuted,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Highest Streak: ${user.highestStreak} days',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.warning,
+                  ),
+                ),
+              ],
             ),
-            const Divider(height: 22),
-            _buildInfoTile(
-              context,
-              icon: Icons.phone_outlined,
-              title: 'Telepon',
-              value: user.phone?.isNotEmpty == true
-                  ? user.phone!
-                  : 'Belum diisi',
-            ),
-            const Divider(height: 22),
-            _buildInfoTile(
-              context,
-              icon: Icons.calendar_month_outlined,
-              title: 'Bergabung',
-              value: dateText,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildInfoTile(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String value,
-  }) {
-    return Row(
-      children: [
-        Container(
-          width: 42,
-          height: 42,
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(14),
+  Widget _buildMenuSection(AppUser user) {
+    return SoftCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          _buildMenuItem(
+            icon: Icons.edit_outlined,
+            iconColor: AppColors.primaryGreen,
+            title: 'Edit Profile',
+            subtitle: 'Change name, phone, and bio',
+            onTap: () => _goToEditProfile(user),
           ),
-          child: Icon(icon, color: AppColors.primary, size: 22),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-            ],
+          const Divider(height: 1, color: AppColors.borderSoft),
+          _buildMenuItem(
+            icon: Icons.info_outline_rounded,
+            iconColor: AppColors.softMint,
+            title: 'About FitNova',
+            subtitle: 'App information and updates',
+            onTap: _showAboutApp,
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMenuSection(BuildContext context, AppUser user) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            ListTile(
-              leading: const Icon(
-                Icons.edit_outlined,
-                color: AppColors.primary,
-              ),
-              title: const Text('Edit Profil'),
-              subtitle: const Text('Ubah nama, nomor telepon, dan bio'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: () => _goToEditProfile(user),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(
-                Icons.info_outline_rounded,
-                color: AppColors.secondary,
-              ),
-              title: const Text('Tentang Aplikasi'),
-              subtitle: const Text('Informasi singkat FitNova'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: _showAboutApp,
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.logout_rounded, color: AppColors.error),
-              title: const Text('Logout'),
-              subtitle: const Text('Keluar dari akun FitNova'),
-              trailing: const Icon(Icons.chevron_right_rounded),
-              onTap: _confirmLogout,
-            ),
-          ],
-        ),
+          const Divider(height: 1, color: AppColors.borderSoft),
+          _buildMenuItem(
+            icon: Icons.logout_rounded,
+            iconColor: AppColors.danger,
+            title: 'Sign Out',
+            subtitle: 'Sign out of your FitNova account',
+            onTap: _confirmLogout,
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(
-    BuildContext context, {
+  Widget _buildMenuItem({
     required IconData icon,
+    required Color iconColor,
     required String title,
+    required String subtitle,
+    required VoidCallback onTap,
   }) {
-    return Row(
-      children: [
-        Icon(icon, color: AppColors.primary, size: 22),
-        const SizedBox(width: 8),
-        Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w900),
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: iconColor.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(10),
         ),
-      ],
+        child: Icon(icon, color: iconColor, size: 20),
+      ),
+      title: Text(
+        title,
+        style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: AppTextStyles.bodySmall.copyWith(color: AppColors.textMuted),
+      ),
+      trailing: const Icon(
+        Icons.chevron_right_rounded,
+        color: AppColors.textMuted,
+        size: 20,
+      ),
+      onTap: onTap,
     );
   }
 
-  Widget _buildAvatar(
-    AppUser user, {
-    required double radius,
-    required Color foregroundColor,
-  }) {
+  Widget _buildAvatar(AppUser user, {required double radius}) {
     final photoUrl = user.photoUrl;
 
-    return CircleAvatar(
-      radius: radius,
-      backgroundColor: foregroundColor.withValues(alpha: 0.18),
-      backgroundImage: photoUrl == null || photoUrl.isEmpty
-          ? null
-          : NetworkImage(photoUrl),
-      child: photoUrl == null || photoUrl.isEmpty
-          ? Text(
-              _getInitial(_displayName(user)),
-              style: TextStyle(
-                color: foregroundColor,
-                fontSize: radius * 0.78,
-                fontWeight: FontWeight.w900,
-              ),
-            )
-          : null,
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: CircleAvatar(
+        radius: radius,
+        backgroundColor: Colors.white.withOpacity(0.2),
+        backgroundImage: photoUrl != null && photoUrl.isNotEmpty
+            ? NetworkImage(photoUrl)
+            : null,
+        child: photoUrl == null || photoUrl.isEmpty
+            ? Text(
+                _getInitial(_displayName(user)),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: radius * 0.78,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : null,
+      ),
     );
   }
 
@@ -534,7 +506,6 @@ class _ProfilePageState extends State<ProfilePage> {
     if (value.trim().isEmpty) {
       return 'U';
     }
-
     return value.trim()[0].toUpperCase();
   }
 }

@@ -2,9 +2,10 @@
 
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/date_formatter.dart';
-import '../../../core/widgets/empty_state_widget.dart';
+import '../../../core/widgets/soft_card.dart';
 import '../../../core/widgets/loading_widget.dart';
 import '../../../models/activity_model.dart';
 import '../services/activity_service.dart';
@@ -35,6 +36,29 @@ class _ActivityListPageState extends State<ActivityListPage> {
     'Workout Rumah',
   ];
 
+  String _getFilterLabel(String filter) {
+    switch (filter) {
+      case 'Semua':
+        return 'All';
+      case 'Lari':
+        return 'Running';
+      case 'Jalan Kaki':
+        return 'Walking';
+      case 'Bersepeda':
+        return 'Cycling';
+      case 'Renang':
+        return 'Swimming';
+      case 'Gym':
+        return 'Gym';
+      case 'Yoga':
+        return 'Yoga';
+      case 'Workout Rumah':
+        return 'Workout';
+      default:
+        return filter;
+    }
+  }
+
   void _goToAddActivityPage() {
     Navigator.push(
       context,
@@ -63,22 +87,30 @@ class _ActivityListPageState extends State<ActivityListPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Hapus Aktivitas?'),
+          backgroundColor: AppColors.softCard,
+          title: Text('Hapus Aktivitas?', style: AppTextStyles.headingSmall),
           content: Text(
             'Aktivitas ${activity.sportType} akan dihapus permanen.',
+            style: AppTextStyles.bodyMedium,
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(context, false);
-              },
-              child: const Text('Batal'),
+              onPressed: () => Navigator.pop(context, false),
+              child: Text(
+                'Batal',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
             ),
-            FilledButton(
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-              style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.danger,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(80, 40),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               child: const Text('Hapus'),
             ),
           ],
@@ -104,7 +136,7 @@ class _ActivityListPageState extends State<ActivityListPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: AppColors.error,
+          backgroundColor: AppColors.danger,
         ),
       );
     }
@@ -124,344 +156,6 @@ class _ActivityListPageState extends State<ActivityListPage> {
 
       return matchesSearch && matchesFilter;
     }).toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamBuilder<List<ActivityModel>>(
-        stream: _activityService.getUserActivitiesStream(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingWidget(message: 'Memuat aktivitas...');
-          }
-
-          if (snapshot.hasError) {
-            return _buildErrorState(context, snapshot.error.toString());
-          }
-
-          final activities = snapshot.data ?? [];
-          final filteredActivities = _filterActivities(activities);
-
-          return RefreshIndicator(
-            onRefresh: () async {
-              setState(() {});
-            },
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: _buildHeader(context, activities)),
-                SliverToBoxAdapter(child: _buildSearchAndFilter()),
-                if (activities.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: EmptyStateWidget(
-                      icon: Icons.fitness_center_rounded,
-                      title: 'Belum ada aktivitas',
-                      message:
-                          'Tambahkan aktivitas olahraga pertamamu agar progress fitness kamu mulai tercatat.',
-                      buttonText: 'Tambah Aktivitas',
-                      onPressed: _goToAddActivityPage,
-                    ),
-                  )
-                else if (filteredActivities.isEmpty)
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: EmptyStateWidget(
-                      icon: Icons.search_off_rounded,
-                      title: 'Data tidak ditemukan',
-                      message:
-                          'Coba gunakan kata kunci atau filter olahraga yang berbeda.',
-                      buttonText: 'Reset Filter',
-                      onPressed: () {
-                        setState(() {
-                          _searchQuery = '';
-                          _selectedFilter = 'Semua';
-                        });
-                      },
-                    ),
-                  )
-                else
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
-                    sliver: SliverList.separated(
-                      itemCount: filteredActivities.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final activity = filteredActivities[index];
-
-                        return _buildActivityCard(context, activity);
-                      },
-                    ),
-                  ),
-              ],
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _goToAddActivityPage,
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Tambah'),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context, List<ActivityModel> activities) {
-    final totalDuration = activities.fold<int>(
-      0,
-      (previousValue, activity) => previousValue + activity.duration,
-    );
-
-    final totalCalories = activities.fold<int>(
-      0,
-      (previousValue, activity) => previousValue + activity.calories,
-    );
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.primary, AppColors.secondary],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(26),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Icon(
-              Icons.fitness_center_rounded,
-              color: Colors.white,
-              size: 38,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Aktivitas Olahraga',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${activities.length} aktivitas • $totalDuration menit • $totalCalories kkal',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.9),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchAndFilter() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-      child: Column(
-        children: [
-          TextField(
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value;
-              });
-            },
-            decoration: const InputDecoration(
-              hintText: 'Cari aktivitas atau catatan...',
-              prefixIcon: Icon(Icons.search_rounded),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 42,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: _filters.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 8),
-              itemBuilder: (context, index) {
-                final filter = _filters[index];
-                final isSelected = _selectedFilter == filter;
-
-                return ChoiceChip(
-                  label: Text(filter),
-                  selected: isSelected,
-                  onSelected: (_) {
-                    setState(() {
-                      _selectedFilter = filter;
-                    });
-                  },
-                  selectedColor: AppColors.primary.withValues(alpha: 0.16),
-                  labelStyle: TextStyle(
-                    color: isSelected
-                        ? AppColors.primary
-                        : AppColors.textSecondary,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  ),
-                  side: BorderSide(
-                    color: isSelected ? AppColors.primary : AppColors.border,
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActivityCard(BuildContext context, ActivityModel activity) {
-    final sportColor = _getSportColor(activity.sportType);
-
-    return Card(
-      child: InkWell(
-        onTap: () => _goToDetailPage(activity),
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Hero(
-                tag: 'activity-icon-${activity.id}',
-                child: Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    width: 58,
-                    height: 58,
-                    decoration: BoxDecoration(
-                      color: sportColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Icon(
-                      _getSportIcon(activity.sportType),
-                      color: sportColor,
-                      size: 30,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      activity.sportType,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      DateFormatter.formatDate(activity.activityDate),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        _buildMiniInfo(
-                          Icons.timer_outlined,
-                          '${activity.duration} menit',
-                        ),
-                        const SizedBox(width: 10),
-                        _buildMiniInfo(
-                          Icons.local_fire_department_outlined,
-                          '${activity.calories} kkal',
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == 'detail') {
-                    _goToDetailPage(activity);
-                  } else if (value == 'edit') {
-                    _goToEditActivityPage(activity);
-                  } else if (value == 'delete') {
-                    _deleteActivity(activity);
-                  }
-                },
-                itemBuilder: (context) {
-                  return const [
-                    PopupMenuItem(
-                      value: 'detail',
-                      child: Row(
-                        children: [
-                          Icon(Icons.visibility_outlined),
-                          SizedBox(width: 8),
-                          Text('Detail'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'edit',
-                      child: Row(
-                        children: [
-                          Icon(Icons.edit_outlined),
-                          SizedBox(width: 8),
-                          Text('Edit'),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'delete',
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.delete_outline_rounded,
-                            color: AppColors.error,
-                          ),
-                          SizedBox(width: 8),
-                          Text('Hapus'),
-                        ],
-                      ),
-                    ),
-                  ];
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMiniInfo(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: AppColors.textSecondary),
-        const SizedBox(width: 4),
-        Text(
-          text,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildErrorState(BuildContext context, String error) {
-    return EmptyStateWidget(
-      icon: Icons.error_outline_rounded,
-      title: 'Gagal memuat aktivitas',
-      message: error,
-      buttonText: 'Coba Lagi',
-      onPressed: () {
-        setState(() {});
-      },
-    );
   }
 
   IconData _getSportIcon(String sportType) {
@@ -491,30 +185,508 @@ class _ActivityListPageState extends State<ActivityListPage> {
     }
   }
 
-  Color _getSportColor(String sportType) {
-    switch (sportType) {
-      case 'Lari':
-        return AppColors.primary;
-      case 'Jalan Kaki':
-        return AppColors.accent;
-      case 'Bersepeda':
-        return AppColors.secondary;
-      case 'Renang':
-        return Colors.cyan;
-      case 'Gym':
-        return Colors.deepPurple;
-      case 'Yoga':
-        return Colors.pink;
-      case 'Futsal':
-        return Colors.orange;
-      case 'Badminton':
-        return Colors.teal;
-      case 'Basket':
-        return Colors.brown;
-      case 'Workout Rumah':
-        return Colors.indigo;
-      default:
-        return AppColors.primary;
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF061A16),
+      body: SafeArea(
+        child: StreamBuilder<List<ActivityModel>>(
+          stream: _activityService.getUserActivitiesStream(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const LoadingWidget(message: 'Memuat aktivitas...');
+            }
+
+            if (snapshot.hasError) {
+              return _buildErrorState(context, snapshot.error.toString());
+            }
+
+            final activities = snapshot.data ?? [];
+            final filteredActivities = _filterActivities(activities);
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(activities),
+                _buildSearchAndFilter(),
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      setState(() {});
+                    },
+                    color: AppColors.primaryGreen,
+                    backgroundColor: AppColors.softCard,
+                    child: filteredActivities.isEmpty
+                        ? SingleChildScrollView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            child: SizedBox(
+                              height: 350,
+                              child: _buildEmptyState(),
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 120),
+                            itemCount: filteredActivities.length,
+                            itemBuilder: (context, index) {
+                              final activity = filteredActivities[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12),
+                                child: _buildActivityCard(context, activity),
+                              );
+                            },
+                          ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 75),
+        child: FloatingActionButton(
+          onPressed: _goToAddActivityPage,
+          backgroundColor: AppColors.primaryGreen,
+          foregroundColor: AppColors.darkGreen,
+          shape: const CircleBorder(),
+          elevation: 2,
+          child: const Icon(Icons.add, size: 28),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Transform.translate(
+        offset: const Offset(0, -40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 68,
+              height: 68,
+              decoration: BoxDecoration(
+                color: const Color(0xFF103C32),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: const Color(0xFF245B4B)),
+              ),
+              child: const Icon(
+                Icons.search_off_rounded,
+                size: 32,
+                color: Color(0xFF4CD58A),
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Data tidak ditemukan',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Color(0xFFF2FFF8),
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 6),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                'Coba gunakan kata kunci atau filter olahraga yang berbeda.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Color(0xFFA8BDB4),
+                  fontSize: 13,
+                  height: 1.3,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(List<ActivityModel> activities) {
+    final totalDuration = activities.fold<int>(
+      0,
+      (previousValue, activity) => previousValue + activity.duration,
+    );
+
+    final totalCalories = activities.fold<int>(
+      0,
+      (previousValue, activity) => previousValue + activity.calories,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Activities',
+            style: AppTextStyles.headingLarge.copyWith(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            'Track your daily movement',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+              fontSize: 12,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Container(
+            height: 76,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.cardSecondary,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.borderSoft),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildHeaderStat('${activities.length}', 'Activities'),
+                Container(width: 1, height: 24, color: AppColors.borderSoft),
+                _buildHeaderStat('$totalDuration mins', 'Duration'),
+                Container(width: 1, height: 24, color: AppColors.borderSoft),
+                _buildHeaderStat('$totalCalories kcal', 'Calories'),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderStat(String value, String label) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          value,
+          style: AppTextStyles.titleMedium.copyWith(
+            color: AppColors.primaryGreen,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: AppTextStyles.bodySmall.copyWith(
+            color: AppColors.textMuted,
+            fontSize: 10,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchAndFilter() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Container(
+            height: 48,
+            margin: const EdgeInsets.only(top: 4, bottom: 6),
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.textPrimary,
+              ),
+              decoration: InputDecoration(
+                hintText: 'Search activity or note...',
+                prefixIcon: const Icon(
+                  Icons.search_rounded,
+                  color: AppColors.textSecondary,
+                  size: 20,
+                ),
+                filled: true,
+                fillColor: AppColors.darkGreen,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: AppColors.borderSoft),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(color: AppColors.borderSoft),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: AppColors.primaryGreen,
+                    width: 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            height: 36,
+            margin: const EdgeInsets.only(top: 2, bottom: 8),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _filters.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final filter = _filters[index];
+                final isSelected = _selectedFilter == filter;
+
+                return ChoiceChip(
+                  label: Text(_getFilterLabel(filter)),
+                  selected: isSelected,
+                  onSelected: (_) {
+                    setState(() {
+                      _selectedFilter = filter;
+                    });
+                  },
+                  backgroundColor: AppColors.softCard,
+                  selectedColor: AppColors.primaryGreen.withOpacity(0.12),
+                  labelStyle: AppTextStyles.titleMedium.copyWith(
+                    fontSize: 12,
+                    color: isSelected
+                        ? AppColors.primaryGreen
+                        : AppColors.textSecondary,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  ),
+                  side: BorderSide(
+                    color: isSelected
+                        ? AppColors.primaryGreen
+                        : AppColors.borderSoft,
+                    width: isSelected ? 1.5 : 1.0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  showCheckmark: false,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 0,
+                  ),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActivityCard(BuildContext context, ActivityModel activity) {
+    return SoftCard(
+      padding: EdgeInsets.zero,
+      child: InkWell(
+        onTap: () => _goToDetailPage(activity),
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Row(
+            children: [
+              Hero(
+                tag: 'activity-icon-${activity.id}',
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGreen.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.borderSoft),
+                  ),
+                  child: Icon(
+                    _getSportIcon(activity.sportType),
+                    color: AppColors.primaryGreen,
+                    size: 24,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      activity.sportType,
+                      style: AppTextStyles.titleMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      DateFormatter.formatDate(activity.activityDate),
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                    if (activity.note.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        activity.note,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '${activity.duration} mins',
+                    style: AppTextStyles.titleMedium.copyWith(
+                      color: AppColors.primaryGreen,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${activity.calories} kcal',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 4),
+              PopupMenuButton<String>(
+                icon: const Icon(
+                  Icons.more_vert_rounded,
+                  color: AppColors.textMuted,
+                  size: 20,
+                ),
+                color: AppColors.softCard,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                onSelected: (value) {
+                  if (value == 'detail') {
+                    _goToDetailPage(activity);
+                  } else if (value == 'edit') {
+                    _goToEditActivityPage(activity);
+                  } else if (value == 'delete') {
+                    _deleteActivity(activity);
+                  }
+                },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'detail',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.visibility_outlined, size: 18),
+                        const SizedBox(width: 8),
+                        Text('Detail', style: AppTextStyles.bodyMedium),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.edit_outlined, size: 18),
+                        const SizedBox(width: 8),
+                        Text('Edit', style: AppTextStyles.bodyMedium),
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.delete_outline_rounded,
+                          color: AppColors.danger,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Hapus',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.danger,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String error) {
+    return Center(
+      child: Transform.translate(
+        offset: const Offset(0, -40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.danger.withOpacity(0.12),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.borderSoft),
+              ),
+              child: const Icon(
+                Icons.error_outline_rounded,
+                color: AppColors.danger,
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Gagal memuat aktivitas',
+              style: AppTextStyles.titleMedium.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Text(
+                error,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.textMuted,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => setState(() {}),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryGreen,
+                foregroundColor: AppColors.darkGreen,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: const Text('Coba Lagi'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+// ignore_for_file: deprecated_member_use
 
-import '../constants/app_colors.dart';
-import 'custom_card.dart';
+import 'package:flutter/material.dart';
+import '../theme/app_colors.dart';
+import '../theme/app_text_styles.dart';
+import 'soft_card.dart';
 
 class StatCard extends StatelessWidget {
   final IconData icon;
@@ -16,62 +18,58 @@ class StatCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.subtitle,
-    this.color = AppColors.neonGreen,
+    this.color = AppColors.primaryGreen,
   });
 
   @override
   Widget build(BuildContext context) {
-    return CustomCard(
-      padding: const EdgeInsets.all(14),
+    return SoftCard(
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const Spacer(),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppColors.textGray,
-                ),
-          ),
-          const SizedBox(height: 2),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Flexible(
+              Expanded(
                 child: Text(
-                  value,
+                  title,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                    fontWeight: FontWeight.w500,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: AppColors.textWhite,
-                        fontWeight: FontWeight.w900,
-                      ),
                 ),
               ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Text(
-                    subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textGray,
-                        ),
-                  ),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  shape: BoxShape.circle,
                 ),
+                child: Icon(icon, color: color, size: 16),
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.headingMedium.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.labelSmall.copyWith(
+              color: AppColors.textMuted,
+            ),
           ),
         ],
       ),

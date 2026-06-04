@@ -1,9 +1,11 @@
-// ignore_for_file: unnecessary_underscores
-
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/date_formatter.dart';
+import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/soft_card.dart';
+import '../../../core/widgets/soft_gradient_card.dart';
 import '../../../core/widgets/empty_state_widget.dart';
 import '../../../core/widgets/loading_widget.dart';
 import '../../../models/challenge_model.dart';
@@ -36,6 +38,11 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
     'Cycling',
     'General Fitness',
   ];
+
+  String _getCategoryLabel(String category) {
+    if (category == 'Semua') return 'All';
+    return category;
+  }
 
   void _goToAddChallengePage() {
     Navigator.push(
@@ -78,8 +85,17 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: widget.showAppBar ? AppBar(title: const Text('Challenge')) : null,
+    return AppScaffold(
+      leading: widget.showAppBar
+          ? IconButton(
+              icon: const Icon(
+                Icons.arrow_back_ios_rounded,
+                color: AppColors.textPrimary,
+              ),
+              onPressed: () => Navigator.pop(context),
+            )
+          : null,
+      appBarTitle: widget.showAppBar ? 'Challenges' : null,
       body: StreamBuilder<List<ChallengeModel>>(
         stream: _challengeService.getChallengesStream(),
         builder: (context, snapshot) {
@@ -100,113 +116,133 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
           final challenges = snapshot.data ?? [];
           final filteredChallenges = _filterChallenges(challenges);
 
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: _buildHeader(context, challenges.length),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(challenges.length),
+              _buildSearchAndFilter(),
+              Expanded(
+                child: filteredChallenges.isEmpty
+                    ? (challenges.isEmpty
+                          ? EmptyStateWidget(
+                              icon: Icons.emoji_events_rounded,
+                              title: 'Belum ada challenge',
+                              message:
+                                  'Buat challenge pertama agar pengguna bisa ikut olahraga bersama.',
+                              buttonText: 'Buat Challenge',
+                              onPressed: _goToAddChallengePage,
+                            )
+                          : EmptyStateWidget(
+                              icon: Icons.search_off_rounded,
+                              title: 'Challenge tidak ditemukan',
+                              message: 'Coba kata kunci atau kategori lain.',
+                              buttonText: 'Reset Filter',
+                              onPressed: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                  _selectedCategory = 'Semua';
+                                });
+                              },
+                            ))
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 100),
+                        itemCount: filteredChallenges.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final challenge = filteredChallenges[index];
+                          return _buildChallengeCard(context, challenge);
+                        },
+                      ),
               ),
-              SliverToBoxAdapter(child: _buildSearchAndFilter()),
-              if (challenges.isEmpty)
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: EmptyStateWidget(
-                    icon: Icons.emoji_events_rounded,
-                    title: 'Belum ada challenge',
-                    message:
-                        'Buat challenge pertama agar pengguna bisa ikut olahraga bersama.',
-                    buttonText: 'Buat Challenge',
-                    onPressed: _goToAddChallengePage,
-                  ),
-                )
-              else if (filteredChallenges.isEmpty)
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: EmptyStateWidget(
-                    icon: Icons.search_off_rounded,
-                    title: 'Challenge tidak ditemukan',
-                    message: 'Coba kata kunci atau kategori lain.',
-                    buttonText: 'Reset Filter',
-                    onPressed: () {
-                      setState(() {
-                        _searchQuery = '';
-                        _selectedCategory = 'Semua';
-                      });
-                    },
-                  ),
-                )
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
-                  sliver: SliverList.separated(
-                    itemCount: filteredChallenges.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final challenge = filteredChallenges[index];
-
-                      return _buildChallengeCard(context, challenge);
-                    },
-                  ),
-                ),
             ],
           );
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: _goToAddChallengePage,
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Buat'),
+        backgroundColor: AppColors.primaryGreen,
+        foregroundColor: AppColors.darkGreen,
+        shape: const CircleBorder(),
+        elevation: 2,
+        child: const Icon(Icons.add, size: 28),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, int totalChallenge) {
+  Widget _buildHeader(int totalChallenge) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(22),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.secondary, AppColors.primary],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(26),
-        ),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+      child: SoftGradientCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(
-              Icons.emoji_events_rounded,
-              color: Colors.white,
-              size: 38,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(
+                    Icons.emoji_events_rounded,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _goToMyChallengePage,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.6),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.list_alt_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'My Challenges',
+                          style: AppTextStyles.labelSmall.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Text(
               'Fitness Challenge',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              style: AppTextStyles.titleLarge.copyWith(
                 color: Colors.white,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
-              '$totalChallenge challenge tersedia untuk meningkatkan motivasi olahraga.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.white.withValues(alpha: 0.9),
+              '$totalChallenge challenges available to test your limits and keep you motivated.',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white.withOpacity(0.85),
+                height: 1.4,
               ),
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: _goToMyChallengePage,
-              style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.white,
-                side: const BorderSide(color: Colors.white),
-              ),
-              icon: const Icon(Icons.list_alt_rounded),
-              label: const Text('Challenge Saya'),
             ),
           ],
         ),
@@ -216,7 +252,7 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
 
   Widget _buildSearchAndFilter() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       child: Column(
         children: [
           TextField(
@@ -225,14 +261,37 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                 _searchQuery = value;
               });
             },
-            decoration: const InputDecoration(
-              hintText: 'Cari challenge...',
-              prefixIcon: Icon(Icons.search_rounded),
+            style: AppTextStyles.bodyLarge.copyWith(
+              color: AppColors.textPrimary,
+            ),
+            decoration: InputDecoration(
+              hintText: 'Search challenge...',
+              prefixIcon: const Icon(
+                Icons.search_rounded,
+                color: AppColors.textSecondary,
+              ),
+              filled: true,
+              fillColor: AppColors.darkGreen,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: AppColors.borderSoft),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: AppColors.borderSoft),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(
+                  color: AppColors.primaryGreen,
+                  width: 1.5,
+                ),
+              ),
             ),
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 42,
+            height: 38,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: _categories.length,
@@ -242,23 +301,32 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                 final isSelected = _selectedCategory == category;
 
                 return ChoiceChip(
-                  label: Text(category),
+                  label: Text(_getCategoryLabel(category)),
                   selected: isSelected,
                   onSelected: (_) {
                     setState(() {
                       _selectedCategory = category;
                     });
                   },
-                  selectedColor: AppColors.primary.withValues(alpha: 0.16),
-                  labelStyle: TextStyle(
+                  backgroundColor: AppColors.softCard,
+                  selectedColor: AppColors.primaryGreen.withOpacity(0.12),
+                  labelStyle: AppTextStyles.titleMedium.copyWith(
+                    fontSize: 13,
                     color: isSelected
-                        ? AppColors.primary
+                        ? AppColors.primaryGreen
                         : AppColors.textSecondary,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                   ),
                   side: BorderSide(
-                    color: isSelected ? AppColors.primary : AppColors.border,
+                    color: isSelected
+                        ? AppColors.primaryGreen
+                        : AppColors.borderSoft,
+                    width: isSelected ? 1.5 : 1.0,
                   ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  showCheckmark: false,
                 );
               },
             ),
@@ -269,30 +337,29 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
   }
 
   Widget _buildChallengeCard(BuildContext context, ChallengeModel challenge) {
-    return Card(
+    return SoftCard(
+      padding: EdgeInsets.zero,
       child: InkWell(
         onTap: () => _goToDetailPage(challenge),
         borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           child: Row(
             children: [
               Hero(
                 tag: 'challenge-icon-${challenge.id}',
-                child: Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    width: 58,
-                    height: 58,
-                    decoration: BoxDecoration(
-                      color: AppColors.secondary.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const Icon(
-                      Icons.emoji_events_rounded,
-                      color: AppColors.secondary,
-                      size: 30,
-                    ),
+                child: Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGreen.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.borderSoft),
+                  ),
+                  child: const Icon(
+                    Icons.emoji_events_rounded,
+                    color: AppColors.primaryGreen,
+                    size: 24,
                   ),
                 ),
               ),
@@ -303,23 +370,23 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
                   children: [
                     Text(
                       challenge.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w800,
+                      style: AppTextStyles.titleMedium.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       challenge.category,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.w600,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.primaryGreen,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
-                      '${challenge.targetDuration} menit • ${DateFormatter.formatDate(challenge.endDate)}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
+                      '${challenge.targetDuration} mins • Ends ${DateFormatter.formatDate(challenge.endDate)}',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.textMuted,
                       ),
                     ),
                   ],
@@ -327,7 +394,8 @@ class _ChallengeListPageState extends State<ChallengeListPage> {
               ),
               const Icon(
                 Icons.chevron_right_rounded,
-                color: AppColors.textSecondary,
+                color: AppColors.textMuted,
+                size: 20,
               ),
             ],
           ),

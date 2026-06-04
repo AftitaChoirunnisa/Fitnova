@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/constants/app_colors.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
 import '../../../core/utils/date_formatter.dart';
+import '../../../core/widgets/app_scaffold.dart';
+import '../../../core/widgets/app_text_field.dart';
+import '../../../core/widgets/primary_button.dart';
+import '../../../core/widgets/secondary_button.dart';
+import '../../../core/widgets/progress_bar.dart';
+import '../../../core/widgets/soft_card.dart';
+import '../../../core/widgets/soft_gradient_card.dart';
 import '../../../core/widgets/empty_state_widget.dart';
 import '../../../core/widgets/loading_widget.dart';
 import '../../../models/challenge_model.dart';
@@ -21,7 +29,6 @@ class ChallengeDetailPage extends StatefulWidget {
 
 class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
   final ChallengeService _challengeService = ChallengeService();
-
   bool _isJoining = false;
 
   Future<void> _joinChallenge() async {
@@ -45,7 +52,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: AppColors.error,
+          backgroundColor: AppColors.danger,
         ),
       );
     } finally {
@@ -76,18 +83,30 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Hapus Challenge?'),
+          backgroundColor: AppColors.softCard,
+          title: Text('Hapus Challenge?', style: AppTextStyles.headingSmall),
           content: Text(
             'Challenge "${challenge.title}" dan data pesertanya akan dihapus.',
+            style: AppTextStyles.bodyMedium,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Batal'),
+              child: Text(
+                'Batal',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
             ),
-            FilledButton(
+            ElevatedButton(
               onPressed: () => Navigator.pop(context, true),
-              style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.danger,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(80, 40),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               child: const Text('Hapus'),
             ),
           ],
@@ -113,7 +132,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: AppColors.error,
+          backgroundColor: AppColors.danger,
         ),
       );
     }
@@ -129,36 +148,37 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Tambah Progress'),
+          backgroundColor: AppColors.softCard,
+          title: Text('Tambah Progress', style: AppTextStyles.headingSmall),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Progress saat ini: ${participant.progress} menit',
-                style: const TextStyle(
+                style: AppTextStyles.bodyMedium.copyWith(
                   color: AppColors.textSecondary,
-                  fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 12),
-              TextField(
+              const SizedBox(height: 16),
+              AppTextField(
                 controller: controller,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Tambah Durasi',
-                  hintText: 'Contoh: 40',
-                  prefixIcon: Icon(Icons.timer_outlined),
-                ),
+                label: 'Tambah Durasi (menit)',
+                hint: 'Contoh: 40',
+                prefixIcon: Icons.timer_outlined,
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
+              child: Text(
+                'Batal',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
             ),
-            FilledButton(
+            ElevatedButton(
               onPressed: () {
                 final addedProgress = int.tryParse(controller.text.trim());
 
@@ -168,6 +188,13 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
 
                 Navigator.pop(context, addedProgress);
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryGreen,
+                foregroundColor: AppColors.darkGreen,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
               child: const Text('Simpan'),
             ),
           ],
@@ -201,7 +228,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', '')),
-          backgroundColor: AppColors.error,
+          backgroundColor: AppColors.danger,
         ),
       );
     }
@@ -214,6 +241,7 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
+            backgroundColor: Colors.transparent,
             body: LoadingWidget(message: 'Memuat detail challenge...'),
           );
         }
@@ -244,119 +272,130 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
 
         final isOwner = challenge.createdBy == _challengeService.currentUserId;
 
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('Detail Challenge'),
-            actions: [
-              IconButton(
-                onPressed: _goToStatisticsPage,
-                icon: const Icon(Icons.insert_chart_outlined_rounded),
-                tooltip: 'Statistik',
-              ),
-              if (isOwner)
-                IconButton(
-                  onPressed: () => _goToEditChallenge(challenge),
-                  icon: const Icon(Icons.edit_outlined),
-                ),
-              if (isOwner)
-                IconButton(
-                  onPressed: () => _deleteChallenge(challenge),
-                  icon: const Icon(Icons.delete_outline_rounded),
-                  color: AppColors.error,
-                ),
-            ],
-          ),
-          body: SafeArea(
-            child: FutureBuilder<ParticipantModel?>(
-              future: _challengeService.getMyParticipant(challenge.id),
-              builder: (context, participantSnapshot) {
-                final myParticipant = participantSnapshot.data;
-                final hasJoined = myParticipant != null;
-
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      _buildHeader(context, challenge),
-                      const SizedBox(height: 18),
-                      _buildProgressCard(context, challenge, myParticipant),
-                      const SizedBox(height: 18),
-                      _buildInfoCard(context, challenge),
-                      const SizedBox(height: 18),
-                      _buildJoinAction(
-                        context,
-                        challenge,
-                        hasJoined,
-                        myParticipant,
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: _goToStatisticsPage,
-                        icon: const Icon(Icons.insert_chart_outlined_rounded),
-                        label: const Text('Lihat Statistik Progress'),
-                      ),
-                      const SizedBox(height: 18),
-                      _buildParticipantsSection(challenge),
-                      const SizedBox(height: 28),
-                    ],
-                  ),
-                );
-              },
+        return AppScaffold(
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios_rounded,
+              color: AppColors.textPrimary,
             ),
+            onPressed: () => Navigator.pop(context),
+          ),
+          appBarTitle: 'Challenge Details',
+          appBarActions: [
+            IconButton(
+              onPressed: _goToStatisticsPage,
+              icon: const Icon(
+                Icons.insert_chart_outlined_rounded,
+                color: AppColors.textPrimary,
+              ),
+              tooltip: 'Statistik',
+            ),
+            if (isOwner)
+              IconButton(
+                onPressed: () => _goToEditChallenge(challenge),
+                icon: const Icon(
+                  Icons.edit_outlined,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            if (isOwner)
+              IconButton(
+                onPressed: () => _deleteChallenge(challenge),
+                icon: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: AppColors.danger,
+                ),
+              ),
+          ],
+          body: FutureBuilder<ParticipantModel?>(
+            future: _challengeService.getMyParticipant(challenge.id),
+            builder: (context, participantSnapshot) {
+              final myParticipant = participantSnapshot.data;
+              final hasJoined = myParticipant != null;
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeaderCard(challenge),
+                    const SizedBox(height: 20),
+                    if (hasJoined) ...[
+                      _buildProgressCard(challenge, myParticipant),
+                      const SizedBox(height: 20),
+                    ],
+                    _buildInfoCard(challenge),
+                    const SizedBox(height: 24),
+                    _buildJoinAction(challenge, hasJoined, myParticipant),
+                    const SizedBox(height: 24),
+                    _buildParticipantsSection(challenge),
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
     );
   }
 
-  Widget _buildHeader(BuildContext context, ChallengeModel challenge) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.secondary, AppColors.primary],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(28),
-      ),
+  Widget _buildHeaderCard(ChallengeModel challenge) {
+    return SoftGradientCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Hero(
-            tag: 'challenge-icon-${challenge.id}',
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                width: 72,
-                height: 72,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(24),
+                  color: Colors.white.withOpacity(0.18),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(
                   Icons.emoji_events_rounded,
                   color: Colors.white,
-                  size: 38,
+                  size: 28,
                 ),
               ),
-            ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  challenge.category,
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 18),
           Text(
             challenge.title,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+            style: AppTextStyles.titleLarge.copyWith(
               color: Colors.white,
-              fontWeight: FontWeight.w800,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             challenge.description,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.white.withValues(alpha: 0.9),
-              height: 1.5,
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white.withOpacity(0.85),
+              height: 1.4,
             ),
           ),
         ],
@@ -365,7 +404,6 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
   }
 
   Widget _buildProgressCard(
-    BuildContext context,
     ChallengeModel challenge,
     ParticipantModel? participant,
   ) {
@@ -374,123 +412,141 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
         ? 0.0
         : (progress / challenge.targetDuration).clamp(0.0, 1.0);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Progress Saya',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            const SizedBox(height: 16),
-            TweenAnimationBuilder<double>(
-              tween: Tween<double>(begin: 0, end: value),
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.easeOutCubic,
-              builder: (context, animatedValue, _) {
-                return LinearProgressIndicator(
-                  value: animatedValue,
-                  minHeight: 12,
-                  borderRadius: BorderRadius.circular(99),
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                  color: participant?.status == 'completed'
-                      ? AppColors.success
-                      : AppColors.primary,
-                );
-              },
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '$progress / ${challenge.targetDuration} menit',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            if (participant?.status == 'completed') ...[
-              const SizedBox(height: 8),
-              const Text(
-                'Challenge selesai! Keren, kamu berhasil mencapai target.',
-                style: TextStyle(
-                  color: AppColors.success,
-                  fontWeight: FontWeight.w600,
+    final isCompleted = participant?.status == 'completed';
+
+    return SoftCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'My Progress',
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (isCompleted)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGreen.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.primaryGreen),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.check_circle_rounded,
+                        color: AppColors.primaryGreen,
+                        size: 12,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        'Completed',
+                        style: AppTextStyles.labelSmall.copyWith(
+                          color: AppColors.primaryGreen,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          ProgressBar(
+            value: value,
+            progressColor: isCompleted
+                ? AppColors.primaryGreen
+                : AppColors.softMint,
+            backgroundColor: AppColors.darkGreen,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '$progress / ${challenge.targetDuration} mins completed',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              Text(
+                '${(value * 100).toInt()}%',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryGreen,
                 ),
               ),
             ],
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildInfoCard(BuildContext context, ChallengeModel challenge) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            _buildInfoRow(
-              context,
-              icon: Icons.category_outlined,
-              label: 'Kategori',
-              value: challenge.category,
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              context,
-              icon: Icons.timer_outlined,
-              label: 'Target Durasi',
-              value: '${challenge.targetDuration} menit',
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              context,
-              icon: Icons.calendar_month_outlined,
-              label: 'Target Hari',
-              value: '${challenge.targetDays} hari',
-            ),
-            const Divider(height: 24),
-            _buildInfoRow(
-              context,
-              icon: Icons.date_range_outlined,
-              label: 'Periode',
-              value:
-                  '${DateFormatter.formatDate(challenge.startDate)} - ${DateFormatter.formatDate(challenge.endDate)}',
-            ),
-          ],
-        ),
+  Widget _buildInfoCard(ChallengeModel challenge) {
+    return SoftCard(
+      child: Column(
+        children: [
+          _buildInfoRow(
+            icon: Icons.category_outlined,
+            label: 'Category',
+            value: challenge.category,
+          ),
+          const Divider(height: 24, color: AppColors.borderSoft),
+          _buildInfoRow(
+            icon: Icons.timer_outlined,
+            label: 'Target Duration',
+            value: '${challenge.targetDuration} mins',
+          ),
+          const Divider(height: 24, color: AppColors.borderSoft),
+          _buildInfoRow(
+            icon: Icons.calendar_month_outlined,
+            label: 'Target Days',
+            value: '${challenge.targetDays} days',
+          ),
+          const Divider(height: 24, color: AppColors.borderSoft),
+          _buildInfoRow(
+            icon: Icons.date_range_outlined,
+            label: 'Period',
+            value:
+                '${DateFormatter.formatDate(challenge.startDate)} - ${DateFormatter.formatDate(challenge.endDate)}',
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildInfoRow(
-    BuildContext context, {
+  Widget _buildInfoRow({
     required IconData icon,
     required String label,
     required String value,
   }) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.primary, size: 22),
+        Icon(icon, color: AppColors.primaryGreen, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             label,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         ),
-        Flexible(
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+        Text(
+          value,
+          textAlign: TextAlign.right,
+          style: AppTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.bold,
+            color: AppColors.textPrimary,
           ),
         ),
       ],
@@ -498,34 +554,32 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
   }
 
   Widget _buildJoinAction(
-    BuildContext context,
     ChallengeModel challenge,
     bool hasJoined,
     ParticipantModel? participant,
   ) {
     if (!hasJoined) {
-      return ElevatedButton.icon(
-        onPressed: _isJoining ? null : _joinChallenge,
-        icon: _isJoining
-            ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Colors.white,
-                ),
-              )
-            : const Icon(Icons.add_task_rounded),
-        label: Text(_isJoining ? 'Memproses...' : 'Join Challenge'),
+      return PrimaryButton(
+        text: 'Join Challenge',
+        isLoading: _isJoining,
+        onPressed: _joinChallenge,
       );
     }
 
-    return ElevatedButton.icon(
-      onPressed: participant == null
-          ? null
-          : () => _showUpdateProgressDialog(challenge, participant),
-      icon: const Icon(Icons.add_rounded),
-      label: const Text('Tambah Progress Saya'),
+    return Column(
+      children: [
+        PrimaryButton(
+          text: 'Update My Progress',
+          onPressed: participant == null
+              ? null
+              : () => _showUpdateProgressDialog(challenge, participant),
+        ),
+        const SizedBox(height: 12),
+        SecondaryButton(
+          text: 'View Progress Statistics',
+          onPressed: _goToStatisticsPage,
+        ),
+      ],
     );
   }
 
@@ -536,61 +590,126 @@ class _ChallengeDetailPageState extends State<ChallengeDetailPage> {
         final participants = snapshot.data ?? [];
 
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Card(
+          return const SoftCard(
             child: Padding(
-              padding: EdgeInsets.all(18),
-              child: Center(child: CircularProgressIndicator()),
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.primaryGreen,
+                  ),
+                ),
+              ),
             ),
           );
         }
 
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Peserta Challenge',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
+        return SoftCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Challenge Participants',
+                style: AppTextStyles.titleMedium.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 12),
-                if (participants.isEmpty)
-                  Text(
-                    'Belum ada peserta.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
+              ),
+              const SizedBox(height: 16),
+              if (participants.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    'No participants yet. Be the first to join!',
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textMuted,
                     ),
-                  )
-                else
-                  ...participants.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final participant = entry.value;
+                  ),
+                )
+              else
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: participants.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final participant = participants[index];
+                    final isCompleted = participant.status == 'completed';
 
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      leading: CircleAvatar(
-                        backgroundColor: AppColors.primary.withValues(
-                          alpha: 0.12,
-                        ),
-                        child: Text(
-                          '${index + 1}',
-                          style: const TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w800,
+                    return Row(
+                      children: [
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryGreen.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                            border: Border.all(color: AppColors.borderSoft),
+                          ),
+                          child: Center(
+                            child: Text(
+                              '${index + 1}',
+                              style: AppTextStyles.labelLarge.copyWith(
+                                color: AppColors.primaryGreen,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      title: Text(participant.userName),
-                      subtitle: Text(
-                        '${participant.progress} menit • ${participant.status == 'completed' ? 'Selesai' : 'Aktif'}',
-                      ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                participant.userName,
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${participant.progress} mins completed',
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: AppColors.textMuted,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isCompleted
+                                ? AppColors.primaryGreen.withOpacity(0.1)
+                                : AppColors.softCard,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: isCompleted
+                                  ? AppColors.primaryGreen
+                                  : AppColors.borderSoft,
+                            ),
+                          ),
+                          child: Text(
+                            isCompleted ? 'Completed' : 'Active',
+                            style: AppTextStyles.labelSmall.copyWith(
+                              color: isCompleted
+                                  ? AppColors.primaryGreen
+                                  : AppColors.textSecondary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     );
-                  }),
-              ],
-            ),
+                  },
+                ),
+            ],
           ),
         );
       },
